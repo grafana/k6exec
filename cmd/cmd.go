@@ -17,26 +17,17 @@ var help string
 // New creates new cobra command for exec command.
 func New() *cobra.Command {
 	root := &cobra.Command{
-		Use:               "exec",
-		Short:             "Launching k6 with extensions",
+		Use:               "exec [flags] [command]",
+		Short:             "Lanch k6 with extensions",
 		Long:              help,
 		SilenceUsage:      true,
 		SilenceErrors:     true,
 		DisableAutoGenTag: true,
 		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
+		RunE:              func(cmd *cobra.Command, _ []string) error { return cmd.Help() },
 	}
-	root.SetHelpCommand(&cobra.Command{Hidden: true})
 
-	for _, cmd := range subcommands() {
-		cmd := cmd
-		cmd.RunE = exec
-		cmd.SilenceErrors = true
-		cmd.SilenceUsage = true
-		cmd.FParseErrWhitelist = cobra.FParseErrWhitelist{UnknownFlags: true}
-		cmd.SetHelpFunc(usage)
-
-		root.AddCommand(&cmd)
-	}
+	root.AddCommand(subcommands()...)
 
 	return root
 }
@@ -100,25 +91,47 @@ func scriptArg(cmd *cobra.Command, args []string) (string, bool) {
 	return last, true
 }
 
-func subcommands() []cobra.Command {
+func subcommands() []*cobra.Command {
 	annext := map[string]string{useExtensions: "true"}
 
-	return []cobra.Command{
-		{Use: "help", Short: "Help about any command"},
-		{Use: "resume", Short: "Resume a paused test"},
-		{Use: "scale", Short: "Scale a running test"},
-		{Use: "cloud", Short: "Run a test on the cloud"},
-		{Use: "completion", Short: "Generate the autocompletion script for the specified shell"},
-		{Use: "inspect", Short: "Inspect a script or archive"},
-		{Use: "pause", Short: "Pause a running test"},
-		{Use: "status", Short: "Show test status"},
-		{Use: "login", Short: "Authenticate with a service"},
-		{Use: "stats", Short: "Show test metrics"},
-		{Use: "version", Short: "Show application version"},
-		{Use: "new", Short: "Create and initialize a new k6 script"},
-		{Use: "run", Short: "Start a test", Annotations: annext},
-		{Use: "archive", Short: "Create an archive", Annotations: annext},
+	all := make([]*cobra.Command, 0, len(commands))
+
+	for _, name := range commands {
+		cmd := &cobra.Command{
+			Use:                name,
+			RunE:               exec,
+			SilenceErrors:      true,
+			SilenceUsage:       true,
+			FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true},
+			Hidden:             true,
+		}
+		cmd.SetHelpFunc(usage)
+
+		if name == "run" || name == "archive" {
+			cmd.Annotations = annext
+		}
+
+		all = append(all, cmd)
 	}
+
+	return all
 }
 
 const useExtensions = "useExtensions"
+
+var commands = []string{ //nolint:gochecknoglobals
+	"help",
+	"resume",
+	"scale",
+	"cloud",
+	"completion",
+	"inspect",
+	"pause",
+	"status",
+	"login",
+	"stats",
+	"version",
+	"new",
+	"run",
+	"archive",
+}
