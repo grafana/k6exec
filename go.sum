@@ -12,6 +12,8 @@ github.com/grafana/clireadme v0.1.0 h1:KYEYSnYdSzmHf3bufaK6fQZ5j4dzvM/T+G6Ba+qNn
 github.com/grafana/clireadme v0.1.0/go.mod h1:Wy4KIG2ZBGMYAYyF9l7qAy+yoJVasqk/txsRgoRI3gc=
 github.com/grafana/k6deps v0.1.1 h1:ei24xajAvBagLVu0O7UaSz0tJ1GhHxqnmJ+inCfQ7Z8=
 github.com/grafana/k6deps v0.1.1/go.mod h1:j8UOs5mZhn5+hpJqDtl5zjYRjMpBKYf+FwaBmHHcfao=
+github.com/grafana/k6deps v0.1.2-0.20240617062847-966ac73b7402 h1:l5tA8297dPeW9j+7EiowQzv8TuxLO/nzIW3Y3q7WgcA=
+github.com/grafana/k6deps v0.1.2-0.20240617062847-966ac73b7402/go.mod h1:j8UOs5mZhn5+hpJqDtl5zjYRjMpBKYf+FwaBmHHcfao=
 github.com/grafana/k6pack v0.2.0 h1:Y8udypzuzFdcFMRHnP5VkdjYXWLb/ouKzm4ct3OqPmg=
 github.com/grafana/k6pack v0.2.0/go.mod h1:cltO5vmQOObJDtKbRkNVGymk3J+MRhriJyQg1JJzeEc=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=

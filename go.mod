@@ -6,7 +6,7 @@ require (
 	github.com/adrg/xdg v0.4.0
 	github.com/evanw/esbuild v0.21.5
 	github.com/grafana/clireadme v0.1.0
-	github.com/grafana/k6deps v0.1.1
+	github.com/grafana/k6deps v0.1.2-0.20240617062847-966ac73b7402
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/term v0.21.0
 )
