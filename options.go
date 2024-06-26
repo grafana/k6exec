@@ -15,8 +15,9 @@ type Options struct {
 	// Its default is determined based on the XDG Base Directory Specification.
 	// https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 	CacheDir string
-	// NoCache can be used to disable the k6 binary cache.
-	NoCache bool
+	// ForceUpdate can be used to unconditionally update the cached k6 binary.
+	// By setting its value to true, the k6 binary can be forced to update.
+	ForceUpdate bool
 	// Client is used during HTTP communication with the build service.
 	// If absent, http.DefaultClient will be used.
 	Client *http.Client
@@ -36,4 +37,8 @@ func (o *Options) client() *http.Client {
 	}
 
 	return http.DefaultClient
+}
+
+func (o *Options) forceUpdate() bool {
+	return o != nil && o.ForceUpdate
 }

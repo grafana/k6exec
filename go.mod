@@ -1,20 +1,28 @@
 module github.com/grafana/k6exec
 
-go 1.21
+go 1.22.2
+
+toolchain go1.22.4
 
 require (
+	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/adrg/xdg v0.4.0
 	github.com/evanw/esbuild v0.21.5
 	github.com/grafana/clireadme v0.1.0
-	github.com/grafana/k6deps v0.1.2-0.20240617062847-966ac73b7402
-	github.com/spf13/cobra v1.8.0
+	github.com/grafana/k6build v0.2.0
+	github.com/grafana/k6deps v0.1.2-0.20240617140502-f1b0dfc93f7f
+	github.com/spf13/cobra v1.8.1
 	golang.org/x/term v0.21.0
 )
 
 require (
-	github.com/Masterminds/semver/v3 v3.2.1 // indirect
-	github.com/grafana/k6pack v0.2.0 // indirect
+	github.com/Masterminds/semver v1.5.0 // indirect
+	github.com/grafana/k6catalog v0.1.0 // indirect
+	github.com/grafana/k6foundry v0.1.3 // indirect
+	github.com/grafana/k6pack v0.2.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 )
