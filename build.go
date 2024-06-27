@@ -74,7 +74,7 @@ func newLocalBuildService(ctx context.Context, opts *Options) (k6build.BuildServ
 		return nil, err
 	}
 
-	if err := download(ctx, opts.catalogURL(), catfile, client); err != nil {
+	if err := download(ctx, opts.extensionCatalogURL(), catfile, client); err != nil {
 		return nil, err
 	}
 

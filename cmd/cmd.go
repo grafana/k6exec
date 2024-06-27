@@ -17,8 +17,8 @@ var help string
 
 type options struct {
 	k6exec.Options
-	buildServiceURL string
-	catalogURL      string
+	buildServiceURL     string
+	extensionCatalogURL string
 }
 
 func (o *options) postProcess() error {
@@ -31,21 +31,34 @@ func (o *options) postProcess() error {
 		o.BuildServiceURL = val
 	}
 
-	if len(o.catalogURL) > 0 {
-		val, err := url.Parse(o.catalogURL)
+	if len(o.extensionCatalogURL) > 0 {
+		val, err := url.Parse(o.extensionCatalogURL)
 		if err != nil {
 			return err
 		}
 
-		o.CatalogURL = val
+		o.ExtensionCatalogURL = val
 	}
 
 	return nil
 }
 
+//nolint:forbidigo
+func (o *options) init() {
+	if value, found := os.LookupEnv("K6_BUILD_SERVICE_URL"); found {
+		o.buildServiceURL = value
+	}
+
+	if value, found := os.LookupEnv("K6_EXTENSION_CATALOG_URL"); found {
+		o.extensionCatalogURL = value
+	}
+}
+
 // New creates new cobra command for exec command.
 func New() *cobra.Command {
 	opts := new(options)
+
+	opts.init()
 
 	root := &cobra.Command{
 		Use:               "exec [flags] [command]",
@@ -63,11 +76,27 @@ func New() *cobra.Command {
 
 	flags := root.PersistentFlags()
 
-	flags.StringVar(&opts.catalogURL, "extension-catalog", "", "URL of the k6 extension catalog to be used")
-	flags.StringVar(&opts.buildServiceURL, "build-service", "", "URL of the k6 build service to be used")
-	flags.BoolVarP(&opts.Verbose, "verbose", "v", false, "enable verbose logging")
+	flags.StringVar(
+		&opts.extensionCatalogURL,
+		"extension-catalog-url",
+		opts.extensionCatalogURL,
+		"URL of the k6 extension catalog to be used",
+	)
+	flags.StringVar(
+		&opts.buildServiceURL,
+		"build-service-url",
+		opts.buildServiceURL,
+		"URL of the k6 build service to be used",
+	)
+	flags.BoolVarP(
+		&opts.Verbose,
+		"verbose",
+		"v",
+		false,
+		"enable verbose logging",
+	)
 
-	root.MarkFlagsMutuallyExclusive("extension-catalog", "build-service")
+	root.MarkFlagsMutuallyExclusive("extension-catalog-url", "build-service-url")
 
 	return root
 }

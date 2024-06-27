@@ -32,9 +32,9 @@ type Options struct {
 	// Client is used during HTTP communication with the build service.
 	// If absent, http.DefaultClient will be used.
 	Client *http.Client
-	// CatalogURL contains the URL of the k6 extension catalog to be used.
-	// If absent, DefaultCatalogURL will be used.
-	CatalogURL *url.URL
+	// ExtensionCatalogURL contains the URL of the k6 extension catalog to be used.
+	// If absent, DefaultExtensionCatalogURL will be used.
+	ExtensionCatalogURL *url.URL
 	// Verbose flag enables verbose logging.
 	Verbose bool
 	// BuildServiceURL contains the URL of the k6 build service to be used.
@@ -42,8 +42,8 @@ type Options struct {
 	BuildServiceURL *url.URL
 }
 
-// DefaultCatalogURL contains the address of the default k6 extension catalog.
-const DefaultCatalogURL = "https://grafana.github.io/k6-extension-catalogs/registered.json"
+// DefaultExtensionCatalogURL contains the address of the default k6 extension catalog.
+const DefaultExtensionCatalogURL = "https://grafana.github.io/k6-extension-catalogs/registered.json"
 
 func (o *Options) appname() string {
 	if o != nil && len(o.AppName) > 0 {
@@ -75,12 +75,12 @@ func (o *Options) client() (*http.Client, error) {
 	return &http.Client{Transport: transport}, nil
 }
 
-func (o *Options) catalogURL() *url.URL {
-	if o != nil && o.CatalogURL != nil {
-		return o.CatalogURL
+func (o *Options) extensionCatalogURL() *url.URL {
+	if o != nil && o.ExtensionCatalogURL != nil {
+		return o.ExtensionCatalogURL
 	}
 
-	loc, _ := url.Parse(DefaultCatalogURL)
+	loc, _ := url.Parse(DefaultExtensionCatalogURL)
 
 	return loc
 }
