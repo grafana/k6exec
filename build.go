@@ -15,20 +15,30 @@ import (
 	"github.com/grafana/k6deps"
 )
 
-const platform = runtime.GOOS + "/" + runtime.GOARCH
+const (
+	platform = runtime.GOOS + "/" + runtime.GOARCH
 
-func depsConvert(deps []*k6deps.Dependency) (string, []k6build.Dependency) {
-	bdeps := make([]k6build.Dependency, len(deps)-1)
+	k6module = "k6"
+)
 
-	for idx, dep := range deps[1:] {
-		bdeps[idx] = k6build.Dependency{Name: dep.Name, Constraints: dep.GetConstraints().String()}
+func depsConvert(deps k6deps.Dependencies) (string, []k6build.Dependency) {
+	bdeps := make([]k6build.Dependency, 0, len(deps))
+	k6constraint := "*"
+
+	for _, dep := range deps {
+		if dep.Name == k6module {
+			k6constraint = dep.GetConstraints().String()
+			continue
+		}
+
+		bdeps = append(bdeps, k6build.Dependency{Name: dep.Name, Constraints: dep.GetConstraints().String()})
 	}
 
-	return deps[0].GetConstraints().String(), bdeps
+	return k6constraint, bdeps
 }
 
-func build(ctx context.Context, deps []*k6deps.Dependency, _ *Options) (*url.URL, error) {
-	svc, err := k6build.DefaultLocalBuildService()
+func build(ctx context.Context, deps k6deps.Dependencies, opts *Options) (*url.URL, error) {
+	svc, err := newBuildService(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -43,9 +53,56 @@ func build(ctx context.Context, deps []*k6deps.Dependency, _ *Options) (*url.URL
 	return url.Parse(artifact.URL)
 }
 
+func newBuildService(ctx context.Context, opts *Options) (k6build.BuildService, error) {
+	if opts.BuildServiceURL != nil {
+		return newBuildServiceClient(opts)
+	}
+
+	return newLocalBuildService(ctx, opts)
+}
+
+func newLocalBuildService(ctx context.Context, opts *Options) (k6build.BuildService, error) {
+	statedir, err := opts.stateSubdir()
+	if err != nil {
+		return nil, err
+	}
+
+	catfile := filepath.Join(statedir, "catalog.json")
+
+	client, err := opts.client()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := download(ctx, opts.catalogURL(), catfile, client); err != nil {
+		return nil, err
+	}
+
+	cachedir, err := opts.cacheDir()
+	if err != nil {
+		return nil, err
+	}
+
+	conf := k6build.LocalBuildServiceConfig{
+		BuildEnv:  map[string]string{"GOWORK": "off"},
+		Catalog:   catfile,
+		CopyGoEnv: true,
+		CacheDir:  filepath.Join(cachedir, "build"),
+		Verbose:   opts.verbose(),
+	}
+
+	return k6build.NewLocalBuildService(ctx, conf)
+}
+
+func newBuildServiceClient(opts *Options) (k6build.BuildService, error) {
+	return k6build.NewBuildServiceClient(k6build.BuildServiceClientConfig{
+		URL: opts.BuildServiceURL.String(),
+	})
+}
+
 //nolint:forbidigo
 func download(ctx context.Context, from *url.URL, dest string, client *http.Client) error {
-	tmp, err := os.CreateTemp(filepath.Dir(dest), k6temp)
+	tmp, err := os.CreateTemp(filepath.Dir(dest), filepath.Base(dest)+"-*")
 	if err != nil {
 		return err
 	}
@@ -66,6 +123,11 @@ func download(ctx context.Context, from *url.URL, dest string, client *http.Clie
 		return err
 	}
 
+	err = os.Chmod(tmp.Name(), syscall.S_IRUSR|syscall.S_IXUSR)
+	if err != nil {
+		return err
+	}
+
 	return os.Rename(tmp.Name(), dest)
 }
 
@@ -79,16 +141,8 @@ func fileDownload(from *url.URL, dest *os.File) error {
 	defer src.Close() //nolint:errcheck
 
 	_, err = io.Copy(dest, src)
-	if err != nil {
-		return err
-	}
 
-	err = os.Chmod(dest.Name(), syscall.S_IRUSR|syscall.S_IXUSR)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 //nolint:forbidigo
@@ -110,14 +164,6 @@ func httpDownload(ctx context.Context, from *url.URL, dest *os.File, client *htt
 	defer resp.Body.Close() //nolint:errcheck
 
 	_, err = io.Copy(dest, resp.Body)
-	if err != nil {
-		return err
-	}
 
-	err = os.Chmod(dest.Name(), syscall.S_IRUSR|syscall.S_IXUSR)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

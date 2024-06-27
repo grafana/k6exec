@@ -4,6 +4,7 @@ package cmd
 import (
 	"context"
 	_ "embed"
+	"net/url"
 	"os"
 
 	"github.com/grafana/k6deps"
@@ -16,6 +17,30 @@ var help string
 
 type options struct {
 	k6exec.Options
+	buildServiceURL string
+	catalogURL      string
+}
+
+func (o *options) postProcess() error {
+	if len(o.buildServiceURL) > 0 {
+		val, err := url.Parse(o.buildServiceURL)
+		if err != nil {
+			return err
+		}
+
+		o.BuildServiceURL = val
+	}
+
+	if len(o.catalogURL) > 0 {
+		val, err := url.Parse(o.catalogURL)
+		if err != nil {
+			return err
+		}
+
+		o.CatalogURL = val
+	}
+
+	return nil
 }
 
 // New creates new cobra command for exec command.
@@ -31,13 +56,18 @@ func New() *cobra.Command {
 		DisableAutoGenTag: true,
 		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
 		RunE:              func(cmd *cobra.Command, _ []string) error { return cmd.Help() },
+		PersistentPreRunE: func(_ *cobra.Command, _ []string) error { return opts.postProcess() },
 	}
 
 	root.AddCommand(subcommands(&opts.Options)...)
 
 	flags := root.PersistentFlags()
 
-	flags.BoolVar(&opts.ForceUpdate, "force-update", false, "force updating the cached k6 executable")
+	flags.StringVar(&opts.catalogURL, "extension-catalog", "", "URL of the k6 extension catalog to be used")
+	flags.StringVar(&opts.buildServiceURL, "build-service", "", "URL of the k6 build service to be used")
+	flags.BoolVarP(&opts.Verbose, "verbose", "v", false, "enable verbose logging")
+
+	root.MarkFlagsMutuallyExclusive("extension-catalog", "build-service")
 
 	return root
 }
@@ -51,24 +81,25 @@ func usage(cmd *cobra.Command, args []string) {
 
 func exec(sub *cobra.Command, args []string, opts *k6exec.Options) error {
 	var (
-		deps k6deps.Dependencies
-		err  error
+		deps  k6deps.Dependencies
+		err   error
+		dopts k6deps.Options
 	)
 
 	if scriptname, hasScript := scriptArg(sub, args); hasScript {
-		deps, err = k6deps.Analyze(&k6deps.Options{
-			Script: k6deps.Source{
-				Name: scriptname,
-			},
-		})
-		if err != nil {
-			return err
-		}
+		dopts.Script.Name = scriptname
+	}
+
+	dopts.Manifest.Name = "package.json"
+
+	deps, err = k6deps.Analyze(&dopts)
+	if err != nil {
+		return err
 	}
 
 	args = append([]string{sub.Name()}, args...)
 
-	cmd, err := k6exec.Command(context.TODO(), args, deps, opts)
+	cmd, err := k6exec.Command(context.Background(), args, deps, opts)
 	if err != nil {
 		return err
 	}
@@ -76,6 +107,8 @@ func exec(sub *cobra.Command, args []string, opts *k6exec.Options) error {
 	cmd.Stderr = os.Stderr //nolint:forbidigo
 	cmd.Stdout = os.Stdout //nolint:forbidigo
 	cmd.Stdin = os.Stdin   //nolint:forbidigo
+
+	defer k6exec.CleanupState(opts) //nolint:errcheck
 
 	return cmd.Run()
 }
