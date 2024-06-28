@@ -2,8 +2,6 @@ module github.com/grafana/k6exec
 
 go 1.22.2
 
-toolchain go1.22.4
-
 require (
 	github.com/adrg/xdg v0.4.0
 	github.com/briandowns/spinner v1.23.1
