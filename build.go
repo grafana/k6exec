@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -54,7 +55,7 @@ func build(ctx context.Context, deps k6deps.Dependencies, opts *Options) (*url.U
 }
 
 func newBuildService(ctx context.Context, opts *Options) (k6build.BuildService, error) {
-	if opts.BuildServiceURL != nil {
+	if opts != nil && opts.BuildServiceURL != nil {
 		return newBuildServiceClient(opts)
 	}
 
@@ -88,7 +89,7 @@ func newLocalBuildService(ctx context.Context, opts *Options) (k6build.BuildServ
 		Catalog:   catfile,
 		CopyGoEnv: true,
 		CacheDir:  filepath.Join(cachedir, "build"),
-		Verbose:   opts.verbose(),
+		Verbose:   slog.Default().Enabled(ctx, slog.LevelDebug),
 	}
 
 	return k6build.NewLocalBuildService(ctx, conf)

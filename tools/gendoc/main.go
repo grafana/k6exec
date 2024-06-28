@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	root := cmd.New()
+	root := cmd.New(nil)
 	root.Use = strings.ReplaceAll(root.Use, "exec", "k6exec")
 	clireadme.Main(root, 1)
 }

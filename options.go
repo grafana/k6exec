@@ -35,8 +35,6 @@ type Options struct {
 	// ExtensionCatalogURL contains the URL of the k6 extension catalog to be used.
 	// If absent, DefaultExtensionCatalogURL will be used.
 	ExtensionCatalogURL *url.URL
-	// Verbose flag enables verbose logging.
-	Verbose bool
 	// BuildServiceURL contains the URL of the k6 build service to be used.
 	// If the value is not nil, the k6 binary is built using the build service instead of the local build.
 	BuildServiceURL *url.URL
@@ -139,8 +137,4 @@ func (o *Options) stateSubdir() (string, error) {
 	}
 
 	return dir, nil
-}
-
-func (o *Options) verbose() bool {
-	return o != nil && o.Verbose
 }

@@ -3,9 +3,7 @@ package main
 import (
 	"errors"
 	"os"
-	"strings"
 
-	"github.com/evanw/esbuild/pkg/api"
 	"golang.org/x/term"
 )
 
@@ -22,13 +20,7 @@ func formatError(err error) string {
 		return perr.Format(width, color)
 	}
 
-	return strings.Join(
-		api.FormatMessages(
-			[]api.Message{{Text: err.Error()}},
-			api.FormatMessagesOptions{TerminalWidth: width, Color: color},
-		),
-		"\n",
-	)
+	return err.Error()
 }
 
 func formatOptions(fd int) (int, bool) {

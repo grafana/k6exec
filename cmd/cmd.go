@@ -4,6 +4,7 @@ package cmd
 import (
 	"context"
 	_ "embed"
+	"log/slog"
 	"net/url"
 	"os"
 
@@ -19,6 +20,8 @@ type options struct {
 	k6exec.Options
 	buildServiceURL     string
 	extensionCatalogURL string
+	verbose             bool
+	levelVar            *slog.LevelVar
 }
 
 func (o *options) postProcess() error {
@@ -40,6 +43,10 @@ func (o *options) postProcess() error {
 		o.ExtensionCatalogURL = val
 	}
 
+	if o.verbose && o.levelVar != nil {
+		o.levelVar.Set(slog.LevelDebug)
+	}
+
 	return nil
 }
 
@@ -55,8 +62,8 @@ func (o *options) init() {
 }
 
 // New creates new cobra command for exec command.
-func New() *cobra.Command {
-	opts := new(options)
+func New(levelVar *slog.LevelVar) *cobra.Command {
+	opts := &options{levelVar: levelVar}
 
 	opts.init()
 
@@ -72,7 +79,9 @@ func New() *cobra.Command {
 		PersistentPreRunE: func(_ *cobra.Command, _ []string) error { return opts.postProcess() },
 	}
 
-	root.AddCommand(subcommands(&opts.Options)...)
+	root.SetVersionTemplate(`{{with .Name}}{{printf "%s " .}}{{end}}{{printf "%s\n" .Version}}`)
+
+	root.AddCommand(subcommands(opts)...)
 
 	flags := root.PersistentFlags()
 
@@ -89,7 +98,7 @@ func New() *cobra.Command {
 		"URL of the k6 build service to be used",
 	)
 	flags.BoolVarP(
-		&opts.Verbose,
+		&opts.verbose,
 		"verbose",
 		"v",
 		false,
@@ -102,13 +111,13 @@ func New() *cobra.Command {
 }
 
 func usage(cmd *cobra.Command, args []string) {
-	err := exec(cmd, append(args, "-h"), nil)
+	err := exec(cmd, append(args, "-h"), new(options))
 	if err != nil {
 		cmd.PrintErr(err)
 	}
 }
 
-func exec(sub *cobra.Command, args []string, opts *k6exec.Options) error {
+func exec(sub *cobra.Command, args []string, opts *options) error {
 	var (
 		deps  k6deps.Dependencies
 		err   error
@@ -119,16 +128,20 @@ func exec(sub *cobra.Command, args []string, opts *k6exec.Options) error {
 		dopts.Script.Name = scriptname
 	}
 
-	dopts.Manifest.Name = "package.json"
-
 	deps, err = k6deps.Analyze(&dopts)
 	if err != nil {
 		return err
 	}
 
-	args = append([]string{sub.Name()}, args...)
+	cmdargs := []string{sub.Name()}
 
-	cmd, err := k6exec.Command(context.Background(), args, deps, opts)
+	if opts.verbose {
+		cmdargs = append(cmdargs, "-v")
+	}
+
+	cmdargs = append(cmdargs, args...)
+
+	cmd, err := k6exec.Command(context.Background(), cmdargs, deps, &opts.Options)
 	if err != nil {
 		return err
 	}
@@ -137,7 +150,7 @@ func exec(sub *cobra.Command, args []string, opts *k6exec.Options) error {
 	cmd.Stdout = os.Stdout //nolint:forbidigo
 	cmd.Stdin = os.Stdin   //nolint:forbidigo
 
-	defer k6exec.CleanupState(opts) //nolint:errcheck
+	defer k6exec.CleanupState(&opts.Options) //nolint:errcheck
 
 	return cmd.Run()
 }
@@ -163,7 +176,7 @@ func scriptArg(cmd *cobra.Command, args []string) (string, bool) {
 	return last, true
 }
 
-func subcommands(opts *k6exec.Options) []*cobra.Command {
+func subcommands(opts *options) []*cobra.Command {
 	annext := map[string]string{useExtensions: "true"}
 
 	all := make([]*cobra.Command, 0, len(commands))
