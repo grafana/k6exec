@@ -7,8 +7,6 @@ const source = `
 
 const devices = parse(source);
 
-function getDevice() {
+export function getDevice() {
   return devices[0];
 }
-
-module.exports = { getDevice };
