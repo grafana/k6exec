@@ -48,10 +48,10 @@ k6exec [flags] [command]
 ### Flags
 
 ```
-      --build-service string       URL of the k6 build service to be used
-      --extension-catalog string   URL of the k6 extension catalog to be used
-  -h, --help                       help for k6exec
-  -v, --verbose                    enable verbose logging
+      --build-service-url string       URL of the k6 build service to be used
+      --extension-catalog-url string   URL of the k6 extension catalog to be used
+  -h, --help                           help for k6exec
+  -v, --verbose                        enable verbose logging
 ```
 
 <!-- #endregion cli -->
