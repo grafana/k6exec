@@ -9,11 +9,11 @@
 
 **Launching k6 with extensions**
 
-The purpose of k6exec is to launch the k6 binary containing the extensions used by the k6 test script. For this purpose, k6exec analyzes the k6 test scripts.
+The launcher will always run the k6 test script with the appropriate k6 binary, which contains the extensions used by the script. In order to do this, it analyzes the script arguments of the "run" and "archive" subcommands, detects the extensions to be used and their version constraints.
 
-k6exec is primarily used as a go library for [k6](https://github.com/grafana/k6) and [xk6](https://github.com/grafana/xk6). In addition, it also contains a command-line tool, which is suitable for launching k6 with extensions based on the dependencies of k6 test scripts.
+The launcher can be integrated into other command line tools as a subcommand. For this purpose, the library contains the functionality of the command line tool as a factrory function that returns [cobra.Command](https://pkg.go.dev/github.com/spf13/cobra#Command).
 
-The command line tool can be integrated into other command line tools as a subcommand. For this purpose, the library also contains the functionality of the command line tool as a factrory function that returns [cobra.Command](https://pkg.go.dev/github.com/spf13/cobra#Command).
+The launcher can also be used as a go library.
 
 ## Install
 
@@ -24,6 +24,8 @@ If you have a go development environment, the installation can also be done with
 ```
 go install github.com/grafana/k6exec/cmd/k6exec@latest
 ```
+
+The launcher acts as a drop-in replacement for the k6 command. For more convenient use, it is advisable to create an alias or shell script called k6 for the launcher. The alias can be used in exactly the same way as the k6 command, with the difference that it generates the real k6 on the fly based on the extensions you want to use.
 
 ## Usage
 
@@ -36,7 +38,9 @@ Lanch k6 with extensions
 
 Launch k6 with a seamless extension user experience.
 
-The launcher will always run the k6 test script with the appropriate k6 binary, which contains the extensions used by the script.
+The launcher acts as a drop-in replacement for the `k6` command. For more convenient use, it is advisable to create an alias or shell script called `k6` for the launcher. The alias can be used in exactly the same way as the `k6` command, with the difference that it generates the real `k6` on the fly based on the extensions you want to use.
+
+The launcher will always run the k6 test script with the appropriate k6 binary, which contains the extensions used by the script. In order to do this, it analyzes the script arguments of the "run" and "archive" subcommands, detects the extensions to be used and their version constraints.
 
 Any k6 command can be used. Use the `help` command to list the available k6 commands.
 
@@ -50,7 +54,10 @@ k6exec [flags] [command]
 ```
       --build-service-url string       URL of the k6 build service to be used
       --extension-catalog-url string   URL of the k6 extension catalog to be used
-  -h, --help                           help for k6exec
+  -h, --help                           help for k6
+      --no-color                       disable colored output
+  -q, --quiet                          disable progress updates
+      --usage                          print launcher usage
   -v, --verbose                        enable verbose logging
 ```
 
