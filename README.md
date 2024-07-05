@@ -28,7 +28,7 @@ go install github.com/grafana/k6exec/cmd/k6exec@latest
 Docker images are available on the GitHub [Packages](https://github.com/grafana/k6exec/pkgs/container/k6exec):
 
 ```
-docker pull ghcr.io/grafana/k6x:latest
+docker pull ghcr.io/grafana/k6exec:latest
 ```
 
 ## Usage
