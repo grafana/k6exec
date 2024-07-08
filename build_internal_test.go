@@ -208,7 +208,7 @@ func Test_build(t *testing.T) {
 
 	require.NoError(t, err)
 
-	cmd := exec.Command(filepath.Clean(dest), "version")
+	cmd := exec.Command(filepath.Clean(dest), "version") //nolint:gosec
 
 	out, err := cmd.Output()
 

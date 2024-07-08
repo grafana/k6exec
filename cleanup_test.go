@@ -14,7 +14,7 @@ import (
 func exists(t *testing.T, filename string) bool {
 	t.Helper()
 
-	_, err := os.Stat(filename)
+	_, err := os.Stat(filename) //nolint:forbidigo
 
 	return err == nil
 }
@@ -29,7 +29,7 @@ func TestCleanupState(t *testing.T) {
 
 	subdir := filepath.Join(tmp, strconv.Itoa(os.Getpid()))
 
-	require.NoError(t, os.MkdirAll(subdir, 0700))
+	require.NoError(t, os.MkdirAll(subdir, 0o700))
 
 	name := filepath.Join(subdir, "hello.txt")
 
