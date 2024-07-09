@@ -72,6 +72,10 @@ func Test_persistentPreRunE(t *testing.T) {
 func Test_preRunE(t *testing.T) {
 	t.Parallel()
 
+	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
+		t.Skip("Skip because k6build doesn't work on Windows yet!")
+	}
+
 	st := &state{
 		levelVar: new(slog.LevelVar),
 		Options: k6exec.Options{
@@ -119,6 +123,10 @@ func Test_preRunE(t *testing.T) {
 //nolint:forbidigo
 func Test_runE(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
+		t.Skip("Skip because k6build doesn't work on Windows yet!")
+	}
 
 	st := &state{
 		levelVar: new(slog.LevelVar),
