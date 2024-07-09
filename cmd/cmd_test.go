@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//nolint:forbidigo
 func TestNew(t *testing.T) { //nolint:paralleltest
 	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
 		t.Skip("Skip because k6build doesn't work on Windows yet!")
@@ -38,36 +37,38 @@ func TestNew(t *testing.T) { //nolint:paralleltest
 	require.NotNil(t, flags.Lookup("no-color"))
 	require.NotNil(t, flags.Lookup("usage"))
 
-	orig := os.Stdout
-	defer func() {
-		os.Stdout = orig
-	}()
-
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-
 	c.SetArgs([]string{"--usage"})
 
-	require.NoError(t, c.Execute())
+	out := captureStdout(t, func() { require.NoError(t, c.Execute()) })
 
-	require.NoError(t, w.Close())
-
-	out, _ := io.ReadAll(r)
-
-	require.Equal(t, c.Long+"\n"+c.UsageString(), string(out))
-
-	r, w, _ = os.Pipe()
-	os.Stdout = w
+	require.Equal(t, c.Long+"\n"+c.UsageString(), out)
 
 	c = cmd.New(lvar)
 
 	c.SetArgs([]string{})
 
-	require.NoError(t, c.Execute())
+	out = captureStdout(t, func() { require.NoError(t, c.Execute()) })
+
+	require.True(t, strings.Contains(out, "  k6 [command]"))
+}
+
+//nolint:forbidigo
+func captureStdout(t *testing.T, fn func()) string {
+	t.Helper()
+
+	orig := os.Stdout
+	defer func() { os.Stdout = orig }()
+
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	fn()
 
 	require.NoError(t, w.Close())
 
-	out, _ = io.ReadAll(r)
+	out, err := io.ReadAll(r)
 
-	require.True(t, strings.Contains(string(out), "  k6 [command]"))
+	require.NoError(t, err)
+
+	return string(out)
 }

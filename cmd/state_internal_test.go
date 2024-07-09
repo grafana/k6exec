@@ -152,7 +152,6 @@ func Test_runE(t *testing.T) {
 	require.True(t, exists(t, st.StateDir))
 }
 
-//nolint:forbidigo
 func Test_helpFunc(t *testing.T) { //nolint:paralleltest
 	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
 		t.Skip("Skip because k6build doesn't work on Windows yet!")
@@ -166,18 +165,9 @@ func Test_helpFunc(t *testing.T) { //nolint:paralleltest
 		},
 	}
 
-	orig := os.Stderr
-	r, w, _ := os.Pipe()
-	os.Stderr = w
+	out := captureStderr(t, func() { st.helpFunc(newSubcommand("version", st), nil) })
 
-	st.helpFunc(newSubcommand("version", st), nil)
-
-	os.Stderr = orig
-	require.NoError(t, w.Close())
-
-	out, _ := io.ReadAll(r)
-
-	require.Empty(t, string(out))
+	require.Empty(t, out)
 }
 
 func exists(t *testing.T, filename string) bool {
@@ -186,4 +176,25 @@ func exists(t *testing.T, filename string) bool {
 	_, err := os.Stat(filename) //nolint:forbidigo
 
 	return err == nil
+}
+
+//nolint:forbidigo
+func captureStderr(t *testing.T, fn func()) string {
+	t.Helper()
+
+	orig := os.Stderr
+	defer func() { os.Stderr = orig }()
+
+	r, w, _ := os.Pipe()
+	os.Stderr = w
+
+	fn()
+
+	require.NoError(t, w.Close())
+
+	out, err := io.ReadAll(r)
+
+	require.NoError(t, err)
+
+	return string(out)
 }
