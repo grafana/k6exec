@@ -89,7 +89,7 @@ func scriptArg(cmd *cobra.Command, args []string) (string, bool) {
 	}
 
 	last := args[len(args)-1]
-	if len(last) == 0 || last[0] == '-' {
+	if last[0] == '-' {
 		return "", false
 	}
 

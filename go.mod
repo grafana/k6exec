@@ -11,12 +11,14 @@ require (
 	github.com/samber/slog-logrus/v2 v2.4.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.0
+	github.com/stretchr/testify v1.9.0
 	golang.org/x/term v0.18.0
 )
 
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/evanw/esbuild v0.21.5 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/grafana/k6catalog v0.1.0 // indirect
@@ -24,10 +26,12 @@ require (
 	github.com/grafana/k6pack v0.2.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/samber/lo v1.44.0 // indirect
 	github.com/samber/slog-common v0.17.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
