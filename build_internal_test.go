@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -48,9 +49,14 @@ func Test_depsConvert(t *testing.T) {
 func Test_newBuildService(t *testing.T) {
 	t.Parallel()
 
-	u, _ := url.Parse("http://localhost:8000")
+	opts := &Options{
+		StateDir: t.TempDir(),
+		CacheDir: t.TempDir(),
+	}
 
-	svc, err := newBuildService(context.Background(), &Options{BuildServiceURL: u})
+	opts.BuildServiceURL, _ = url.Parse("http://localhost:8000")
+
+	svc, err := newBuildService(context.Background(), opts)
 
 	require.NoError(t, err)
 	require.IsType(t, new(k6build.BuildClient), svc)
@@ -59,10 +65,11 @@ func Test_newBuildService(t *testing.T) {
 	srv := testWebServer(t)
 	defer srv.Close()
 
-	u, err = url.Parse(srv.URL + "/empty-catalog.json")
+	opts.ExtensionCatalogURL, err = url.Parse(srv.URL + "/empty-catalog.json")
 	require.NoError(t, err)
+	opts.BuildServiceURL = nil
 
-	svc, err = newBuildService(context.Background(), &Options{ExtensionCatalogURL: u})
+	svc, err = newBuildService(context.Background(), opts)
 
 	require.NoError(t, err)
 
@@ -149,7 +156,7 @@ func Test_fileDownload(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "{}", strings.TrimSpace(string(contents)))
 
-	from, err = url.Parse("file://" + tmp + "/no_such_file")
+	from, err = url.Parse("file:///" + tmp + "/no_such_file")
 
 	require.NoError(t, err)
 
@@ -181,7 +188,7 @@ func Test_download(t *testing.T) {
 	contents, err := os.ReadFile(dest)
 
 	require.NoError(t, err)
-	require.Equal(t, "{}\n", string(contents))
+	require.Equal(t, "{}", strings.TrimSpace(string(contents)))
 
 	abs, err := filepath.Abs(filepath.Join("testdata", "empty-catalog.json"))
 
@@ -208,6 +215,10 @@ func testWebServer(t *testing.T) *httptest.Server {
 
 func Test_build(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
+		t.Skip("Skip because k6build doesn't work on Windows yet!")
+	}
 
 	srv := testWebServer(t)
 	defer srv.Close()

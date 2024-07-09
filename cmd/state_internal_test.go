@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"testing"
 
@@ -153,6 +154,10 @@ func Test_runE(t *testing.T) {
 
 //nolint:forbidigo
 func Test_helpFunc(t *testing.T) { //nolint:paralleltest
+	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
+		t.Skip("Skip because k6build doesn't work on Windows yet!")
+	}
+
 	st := &state{
 		levelVar: new(slog.LevelVar),
 		Options: k6exec.Options{

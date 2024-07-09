@@ -4,6 +4,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -13,6 +14,10 @@ import (
 
 //nolint:forbidigo
 func TestNew(t *testing.T) { //nolint:paralleltest
+	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
+		t.Skip("Skip because k6build doesn't work on Windows yet!")
+	}
+
 	lvar := new(slog.LevelVar)
 
 	c := cmd.New(lvar)

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -14,6 +15,10 @@ import (
 
 func TestCommand(t *testing.T) {
 	t.Parallel()
+
+	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
+		t.Skip("Skip because k6build doesn't work on Windows yet!")
+	}
 
 	srv := testWebServer(t)
 	defer srv.Close()
