@@ -77,7 +77,7 @@ func Test_newLocalBuildService(t *testing.T) {
 	abs, err := filepath.Abs(filepath.Join("testdata", "minimal-catalog.json"))
 	require.NoError(t, err)
 
-	u, err := url.Parse("file:///" + filepath.ToSlash(abs))
+	u, err := url.Parse("file://" + filepath.ToSlash(abs))
 	require.NoError(t, err)
 
 	opts := &Options{ExtensionCatalogURL: u}
@@ -116,7 +116,7 @@ func Test_httpDownload(t *testing.T) {
 	contents, err := os.ReadFile(dest.Name())
 
 	require.NoError(t, err)
-	require.Equal(t, "{}\n", string(contents))
+	require.Equal(t, "{}", strings.TrimSpace(string(contents)))
 }
 
 //nolint:forbidigo
@@ -131,7 +131,7 @@ func Test_fileDownload(t *testing.T) {
 
 	require.NoError(t, err)
 
-	from, err := url.Parse("file:///" + filepath.ToSlash(abs))
+	from, err := url.Parse("file://" + filepath.ToSlash(abs))
 
 	require.NoError(t, err)
 
@@ -147,9 +147,9 @@ func Test_fileDownload(t *testing.T) {
 	contents, err := os.ReadFile(dest.Name())
 
 	require.NoError(t, err)
-	require.Equal(t, "{}\n", string(contents))
+	require.Equal(t, "{}", strings.TrimSpace(string(contents)))
 
-	from, err = url.Parse("file:///" + tmp + "/no_such_file")
+	from, err = url.Parse("file://" + tmp + "/no_such_file")
 
 	require.NoError(t, err)
 
@@ -187,7 +187,7 @@ func Test_download(t *testing.T) {
 
 	require.NoError(t, err)
 
-	from, err = url.Parse("file:///" + filepath.ToSlash(abs))
+	from, err = url.Parse("file://" + filepath.ToSlash(abs))
 
 	require.NoError(t, err)
 
