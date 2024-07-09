@@ -115,6 +115,7 @@ func download(ctx context.Context, from *url.URL, dest string, client *http.Clie
 	}
 
 	if err != nil {
+		_ = tmp.Close()
 		_ = os.Remove(tmp.Name())
 
 		return err
@@ -124,7 +125,7 @@ func download(ctx context.Context, from *url.URL, dest string, client *http.Clie
 		return err
 	}
 
-	err = os.Chmod(tmp.Name(), syscall.S_IRUSR|syscall.S_IXUSR)
+	err = os.Chmod(tmp.Name(), syscall.S_IRUSR|syscall.S_IXUSR|syscall.S_IWUSR)
 	if err != nil {
 		return err
 	}
