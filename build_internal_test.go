@@ -204,7 +204,7 @@ func Test_download(t *testing.T) {
 	contents, err = os.ReadFile(dest)
 
 	require.NoError(t, err)
-	require.Equal(t, "{}\n", string(contents))
+	require.Equal(t, "{}", strings.TrimSpace(string(contents)))
 }
 
 func testWebServer(t *testing.T) *httptest.Server {
