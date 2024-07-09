@@ -69,6 +69,28 @@ func Test_newBuildService(t *testing.T) {
 	require.NotEqual(t, "*k6build.BuildClient", fmt.Sprintf("%T", svc))
 }
 
+func Test_newLocalBuildService(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	abs, err := filepath.Abs(filepath.Join("testdata", "minimal-catalog.json"))
+	require.NoError(t, err)
+
+	u, err := url.Parse("file:///" + filepath.ToSlash(abs))
+	require.NoError(t, err)
+
+	opts := &Options{ExtensionCatalogURL: u}
+
+	_, err = newLocalBuildService(ctx, opts)
+	require.NoError(t, err)
+
+	opts.StateDir = ""
+	opts.AppName = invalidAppName(t)
+	_, err = newLocalBuildService(ctx, opts)
+	require.Error(t, err)
+}
+
 //nolint:forbidigo
 func Test_httpDownload(t *testing.T) {
 	t.Parallel()
@@ -196,7 +218,9 @@ func Test_build(t *testing.T) {
 
 	ctx := context.Background()
 
-	loc, err := build(ctx, make(k6deps.Dependencies), &Options{ExtensionCatalogURL: u})
+	opts := &Options{CacheDir: t.TempDir(), StateDir: t.TempDir(), ExtensionCatalogURL: u}
+
+	loc, err := build(ctx, make(k6deps.Dependencies), opts)
 
 	require.NoError(t, err)
 
@@ -215,19 +239,19 @@ func Test_build(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, strings.HasPrefix(string(out), "k6 "))
 
-	u, err = url.Parse(srv.URL + "/empty-catalog.json")
+	opts.ExtensionCatalogURL, err = url.Parse(srv.URL + "/empty-catalog.json")
 
 	require.NoError(t, err)
 
-	_, err = build(ctx, make(k6deps.Dependencies), &Options{ExtensionCatalogURL: u})
+	_, err = build(ctx, make(k6deps.Dependencies), opts)
 
 	require.Error(t, err)
 
-	u, err = url.Parse(srv.URL + "/missing-catalog.json")
+	opts.ExtensionCatalogURL, err = url.Parse(srv.URL + "/missing-catalog.json")
 
 	require.NoError(t, err)
 
-	_, err = build(ctx, make(k6deps.Dependencies), &Options{ExtensionCatalogURL: u})
+	_, err = build(ctx, make(k6deps.Dependencies), opts)
 
 	require.Error(t, err)
 }
