@@ -7,8 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type testError struct {
-}
+type testError struct{}
 
 func (*testError) Error() string {
 	return "test error"

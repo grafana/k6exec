@@ -27,7 +27,7 @@ func Test_newCmd(t *testing.T) { //nolint:paralleltest
 	require.NoError(t, cmd.Execute())
 }
 
-func Test_initLogging(t *testing.T) {
+func Test_initLogging(t *testing.T) { //nolint:paralleltest
 	lvar := initLogging(appname)
 
 	require.NotNil(t, lvar)
