@@ -1,18 +1,19 @@
 module github.com/grafana/k6exec
 
 go 1.22.2
+toolchain go1.22.5
 
 require (
 	github.com/adrg/xdg v0.4.0
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6build v0.2.2
-	github.com/grafana/k6deps v0.1.2
+	github.com/grafana/k6deps v0.1.3
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/samber/slog-logrus/v2 v2.5.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/term v0.18.0
+	golang.org/x/term v0.21.0
 )
 
 require (
