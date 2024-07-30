@@ -41,7 +41,7 @@ type Options struct {
 }
 
 // DefaultExtensionCatalogURL contains the address of the default k6 extension catalog.
-const DefaultExtensionCatalogURL = "https://grafana.github.io/k6-extension-catalogs/registered.json"
+const DefaultExtensionCatalogURL = "https://grafana.github.io/k6-extension-registry/catalog-registered.json"
 
 func (o *Options) appname() string {
 	if o != nil && len(o.AppName) > 0 {
