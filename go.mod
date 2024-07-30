@@ -3,7 +3,7 @@ module github.com/grafana/k6exec
 go 1.22.2
 
 require (
-	github.com/adrg/xdg v0.4.0
+	github.com/adrg/xdg v0.5.0
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6build v0.2.2
 	github.com/grafana/k6deps v0.1.2
@@ -31,7 +31,7 @@ require (
 	github.com/samber/slog-common v0.17.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/mod v0.18.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
