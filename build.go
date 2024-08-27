@@ -13,6 +13,8 @@ import (
 	"syscall"
 
 	"github.com/grafana/k6build"
+	"github.com/grafana/k6build/pkg/client"
+	"github.com/grafana/k6build/pkg/local"
 	"github.com/grafana/k6deps"
 )
 
@@ -84,7 +86,7 @@ func newLocalBuildService(ctx context.Context, opts *Options) (k6build.BuildServ
 		return nil, err
 	}
 
-	conf := k6build.LocalBuildServiceConfig{
+	conf := local.BuildServiceConfig{
 		BuildEnv:  map[string]string{"GOWORK": "off"},
 		Catalog:   catfile,
 		CopyGoEnv: true,
@@ -92,11 +94,11 @@ func newLocalBuildService(ctx context.Context, opts *Options) (k6build.BuildServ
 		Verbose:   slog.Default().Enabled(ctx, slog.LevelDebug),
 	}
 
-	return k6build.NewLocalBuildService(ctx, conf)
+	return local.NewBuildService(ctx, conf)
 }
 
 func newBuildServiceClient(opts *Options) (k6build.BuildService, error) {
-	return k6build.NewBuildServiceClient(k6build.BuildServiceClientConfig{
+	return client.NewBuildServiceClient(client.BuildServiceClientConfig{
 		URL: opts.BuildServiceURL.String(),
 	})
 }

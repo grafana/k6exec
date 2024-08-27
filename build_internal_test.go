@@ -13,7 +13,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/grafana/k6build"
+	"github.com/grafana/k6build/pkg/client"
+
 	"github.com/grafana/k6deps"
 	"github.com/stretchr/testify/require"
 )
@@ -59,8 +60,8 @@ func Test_newBuildService(t *testing.T) {
 	svc, err := newBuildService(context.Background(), opts)
 
 	require.NoError(t, err)
-	require.IsType(t, new(k6build.BuildClient), svc)
-	require.Equal(t, "*k6build.BuildClient", fmt.Sprintf("%T", svc))
+	require.IsType(t, new(client.BuildClient), svc)
+	require.Equal(t, "*client.BuildClient", fmt.Sprintf("%T", svc))
 
 	srv := testWebServer(t)
 	defer srv.Close()
