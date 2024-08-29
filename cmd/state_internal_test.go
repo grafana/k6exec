@@ -113,6 +113,9 @@ func Test_preRunE(t *testing.T) {
 	arg := filepath.Join("testdata", "script.js")
 	require.NoError(t, st.preRunE(sub, []string{arg}))
 
+	arg = filepath.Join("testdata", "archive.tar")
+	require.NoError(t, st.preRunE(sub, []string{arg}))
+
 	arg = filepath.Join("testdata", "invalid_constraint.js")
 	require.Error(t, st.preRunE(sub, []string{arg}))
 

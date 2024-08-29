@@ -7,6 +7,7 @@ require (
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6build v0.3.0
 	github.com/grafana/k6deps v0.1.4
+	github.com/grafana/k6pack v0.2.2
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/samber/slog-logrus/v2 v2.5.0
 	github.com/sirupsen/logrus v1.9.3
@@ -23,7 +24,6 @@ require (
 	github.com/google/btree v1.1.2 // indirect
 	github.com/grafana/k6catalog v0.1.0 // indirect
 	github.com/grafana/k6foundry v0.2.0 // indirect
-	github.com/grafana/k6pack v0.2.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
