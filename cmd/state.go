@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/grafana/k6deps"
 	"github.com/grafana/k6exec"
@@ -68,18 +69,29 @@ func (s *state) persistentPreRunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-func (s *state) preRunE(sub *cobra.Command, args []string) error {
-	var (
-		deps  k6deps.Dependencies
-		err   error
-		dopts k6deps.Options
-	)
-
-	if scriptname, hasScript := scriptArg(sub, args); hasScript {
-		dopts.Script.Name = scriptname
+func analyze(sub *cobra.Command, args []string) (k6deps.Dependencies, error) {
+	scriptname, hasScript := scriptArg(sub, args)
+	if !hasScript {
+		return k6deps.Analyze(&k6deps.Options{})
 	}
 
-	deps, err = k6deps.Analyze(&dopts)
+	if strings.HasSuffix(scriptname, ".tar") {
+		return analyzeArchive(scriptname)
+	}
+
+	return analyzeScript(scriptname)
+}
+
+func analyzeScript(filename string) (k6deps.Dependencies, error) {
+	var opts k6deps.Options
+
+	opts.Script.Name = filename
+
+	return k6deps.Analyze(&opts)
+}
+
+func (s *state) preRunE(sub *cobra.Command, args []string) error {
+	deps, err := analyze(sub, args)
 	if err != nil {
 		return err
 	}
