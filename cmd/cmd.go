@@ -108,7 +108,7 @@ func newSubcommand(name string, state *state) *cobra.Command {
 	}
 	cmd.SetHelpFunc(state.helpFunc)
 
-	if name == "run" || name == "archive" {
+	if name == "run" || name == "archive" || name == "inspect" {
 		cmd.Annotations = map[string]string{useExtensions: "true"}
 	}
 
