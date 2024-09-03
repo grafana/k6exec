@@ -3,7 +3,7 @@ VOLUME /cache
 VOLUME /state
 RUN adduser -D -u 1000 -g 1000 -h /home/k6exec k6exec && \
     mkdir -p /cache/k6exec /state/k6exec && \
-    chown -R 1000:1000 /cache /state \
+    chown -R 1000:1000 /cache /state && \
     ln -s /usr/bin/k6exec /usr/bin/k6
 ENV CGO_ENABLED=1 XDG_CACHE_HOME="/cache" XDG_STATE_HOME="/state"
 COPY k6exec /usr/bin/k6exec
