@@ -1,7 +1,7 @@
 github.com/Masterminds/semver v1.5.0 h1:H65muMkzWKEuNDnfl9d70GUjFniHKHRbFPGBuZ3QEww=
 github.com/Masterminds/semver v1.5.0/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF078ddwwvV3Y=
-github.com/Masterminds/semver/v3 v3.2.1 h1:RN9w6+7QoMeJVGyfmbcgs28Br8cvmnucEXnY0rYXWg0=
-github.com/Masterminds/semver/v3 v3.2.1/go.mod h1:qvl/7zhW3nngYb5+80sSMF+FG2BjYrf8m9wsX0PNOMQ=
+github.com/Masterminds/semver/v3 v3.3.0 h1:B8LGeaivUe71a5qox1ICM/JLl0NqZSW5CHyL+hmvYS0=
+github.com/Masterminds/semver/v3 v3.3.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/adrg/xdg v0.5.0 h1:dDaZvhMXatArP1NPHhnfaQUqWBLBsmx1h1HXQdMoFCY=
 github.com/adrg/xdg v0.5.0/go.mod h1:dDdY4M4DF9Rjy4kHPeNL+ilVF+p2lK8IdM9/rTSGcI4=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
@@ -20,8 +20,8 @@ github.com/grafana/k6build v0.3.0 h1:Td2GHtjqm8UhNBQnLEZvn/d9QOUvdrmWRNxj0QVy6/8
 github.com/grafana/k6build v0.3.0/go.mod h1:FPyo1ROpcST4zR4v0U+OcZQvairv+vIn4dKnHxHMCic=
 github.com/grafana/k6catalog v0.1.0 h1:jLmbmB3EUJ+zyQG3hWy6dWbtMjvTkvJNx1d4LX8it6I=
 github.com/grafana/k6catalog v0.1.0/go.mod h1:8R9eXAh2nb69+drkj0rZ4aemso0jcwCbPP6Q3E5LqCw=
-github.com/grafana/k6deps v0.1.4 h1:rFlp2IMTSNk2RuztIfy17X5MO6HbQ6EebgvKvVPg+Po=
-github.com/grafana/k6deps v0.1.4/go.mod h1:xeIBBsYUqrkcDc7lIqbAXSd45dmtljYkW+d/q4wb4sg=
+github.com/grafana/k6deps v0.1.5 h1:UYp61ez7MbW6v9aKvsuvK9a7Ym6+1iPvzuqrJOne7Dg=
+github.com/grafana/k6deps v0.1.5/go.mod h1:FJFn19VjeiPQq1hlYY39uChetg8H2rwFrqvOZR8AGOo=
 github.com/grafana/k6foundry v0.2.0 h1:+aE5wuCP0XNGNsxM7UiPj9hyw4RdWeW929PuGwLWIlg=
 github.com/grafana/k6foundry v0.2.0/go.mod h1:b6n4InFgXl+3yPobmlyJfcJmLozU9CI9IIUuq8YqEiM=
 github.com/grafana/k6pack v0.2.2 h1:ynppjxOhLH6nuPe1O/I9qmWbcRusYA+D13OXWjLg5xE=
