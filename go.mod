@@ -5,7 +5,7 @@ go 1.22.4
 require (
 	github.com/adrg/xdg v0.5.0
 	github.com/grafana/clireadme v0.1.0
-	github.com/grafana/k6build v0.3.0
+	github.com/grafana/k6build v0.3.1
 	github.com/grafana/k6deps v0.1.5
 	github.com/grafana/k6pack v0.2.2
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
