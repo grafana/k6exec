@@ -114,7 +114,11 @@ func (s *state) preRunE(sub *cobra.Command, args []string) error {
 		cmdargs = append(cmdargs, "--no-color")
 	}
 
-	cmdargs = append(cmdargs, args...)
+	if subargs := getArgs(sub); subargs != nil {
+		cmdargs = append(cmdargs, subargs...)
+	} else {
+		cmdargs = append(cmdargs, args...)
+	}
 
 	cmd, err := k6exec.Command(context.Background(), cmdargs, deps, &s.Options)
 	if err != nil {

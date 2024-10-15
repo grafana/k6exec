@@ -4,7 +4,6 @@ package main
 import (
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/grafana/k6exec/cmd"
 	sloglogrus "github.com/samber/slog-logrus/v2"
@@ -36,17 +35,16 @@ func main() {
 }
 
 func newCmd(args []string, levelVar *slog.LevelVar) *cobra.Command {
-	cmd := cmd.New(levelVar)
-	cmd.Use = strings.ReplaceAll(cmd.Use, "exec", appname)
-	cmd.Version = version
+	root := cmd.New(levelVar)
+	root.Version = version
 
 	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help") {
 		args[0] = "help"
 	}
 
-	cmd.SetArgs(args)
+	cmd.SetArgs(root, args)
 
-	return cmd
+	return root
 }
 
 func runCmd(cmd *cobra.Command) {
