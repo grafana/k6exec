@@ -3,7 +3,7 @@ module github.com/grafana/k6exec
 go 1.22.4
 
 require (
-	github.com/adrg/xdg v0.5.0
+	github.com/adrg/xdg v0.5.1
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6build v0.3.2
 	github.com/grafana/k6deps v0.1.5
