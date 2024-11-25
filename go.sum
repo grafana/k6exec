@@ -1,5 +1,5 @@
-github.com/Masterminds/semver/v3 v3.3.0 h1:B8LGeaivUe71a5qox1ICM/JLl0NqZSW5CHyL+hmvYS0=
-github.com/Masterminds/semver/v3 v3.3.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
+github.com/Masterminds/semver/v3 v3.3.1 h1:QtNSWtVZ3nBfk8mAOu/B6v7FMJ+NHTIgUPi7rj+4nv4=
+github.com/Masterminds/semver/v3 v3.3.1/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/adrg/xdg v0.5.3 h1:xRnxJXne7+oWDatRhR1JLnvuccuIeCoBu2rtuLqQB78=
 github.com/adrg/xdg v0.5.3/go.mod h1:nlTsY+NNiCBGCK2tpm09vRqfVzrc2fLmXGpBLF0zlTQ=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
@@ -18,12 +18,12 @@ github.com/grafana/k6build v0.3.5 h1:R5/8w/Ps4brefu56HHFujPK01xx9AfrV6KraVW3uohY
 github.com/grafana/k6build v0.3.5/go.mod h1:9e3IPYKatismMUV3Oq0V7auStNxoiVuiuk2uZrmRqhg=
 github.com/grafana/k6catalog v0.2.3 h1:Gol46qra9yjPYSrxLj6CDKcdY/DUEprM4Xd4TCNPkfA=
 github.com/grafana/k6catalog v0.2.3/go.mod h1:ozCf9+KBw63lNrRiZtp7CvzA7V0ATQuOQN2IoG2irw4=
-github.com/grafana/k6deps v0.1.6 h1:g232iZWiXKasbnqUn9kh5AiMG6FLpc1Fa1T53AM+GEw=
-github.com/grafana/k6deps v0.1.6/go.mod h1:/6jmPWr08dTiHGFOgV8sdnF/eVyeBg19C3omUj+4TEM=
+github.com/grafana/k6deps v0.1.7 h1:s7ddqHvvcvzBiX/kueOgAQXfrUEputLh48gokJr7v/k=
+github.com/grafana/k6deps v0.1.7/go.mod h1:8szhtnOzNmxwOzJ2diu+wPc9J2Vxvq69Lcyh2WvdVA8=
 github.com/grafana/k6foundry v0.3.0 h1:C+6dPbsOv7Uq4hEhBFNuYqmTdE9jQ0VqhXqBDtMkVTE=
 github.com/grafana/k6foundry v0.3.0/go.mod h1:/NtBSQQgXup5SVbfInl0Q8zKVx08xgvXIZ0xncqexEs=
-github.com/grafana/k6pack v0.2.2 h1:ynppjxOhLH6nuPe1O/I9qmWbcRusYA+D13OXWjLg5xE=
-github.com/grafana/k6pack v0.2.2/go.mod h1:hlcxujzTi0reGuo00Z1MJ2Ax1CD4rM4jIjllEwxcaGs=
+github.com/grafana/k6pack v0.2.3 h1:+1sDgze+7K2Z2HOmIZ6wNpOQbkLUwuIpfTFn2XKJc8E=
+github.com/grafana/k6pack v0.2.3/go.mod h1:MMbRHF3oWDQY8BuRcvoQKLH4xXemPeHaLX6s3+GbmQk=
 github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 h1:+ngKgrYPPJrOjhax5N+uePQ0Fh1Z7PheYoUI/0nzkPA=
 github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
