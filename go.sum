@@ -18,8 +18,8 @@ github.com/grafana/k6build v0.3.5 h1:R5/8w/Ps4brefu56HHFujPK01xx9AfrV6KraVW3uohY
 github.com/grafana/k6build v0.3.5/go.mod h1:9e3IPYKatismMUV3Oq0V7auStNxoiVuiuk2uZrmRqhg=
 github.com/grafana/k6catalog v0.2.3 h1:Gol46qra9yjPYSrxLj6CDKcdY/DUEprM4Xd4TCNPkfA=
 github.com/grafana/k6catalog v0.2.3/go.mod h1:ozCf9+KBw63lNrRiZtp7CvzA7V0ATQuOQN2IoG2irw4=
-github.com/grafana/k6deps v0.1.7 h1:s7ddqHvvcvzBiX/kueOgAQXfrUEputLh48gokJr7v/k=
-github.com/grafana/k6deps v0.1.7/go.mod h1:8szhtnOzNmxwOzJ2diu+wPc9J2Vxvq69Lcyh2WvdVA8=
+github.com/grafana/k6deps v0.1.8 h1:8ZrkAQR8aWQlYPoRlEqbWVHghhGpSHtOQ42fBL++cmo=
+github.com/grafana/k6deps v0.1.8/go.mod h1:8szhtnOzNmxwOzJ2diu+wPc9J2Vxvq69Lcyh2WvdVA8=
 github.com/grafana/k6foundry v0.3.0 h1:C+6dPbsOv7Uq4hEhBFNuYqmTdE9jQ0VqhXqBDtMkVTE=
 github.com/grafana/k6foundry v0.3.0/go.mod h1:/NtBSQQgXup5SVbfInl0Q8zKVx08xgvXIZ0xncqexEs=
 github.com/grafana/k6pack v0.2.3 h1:+1sDgze+7K2Z2HOmIZ6wNpOQbkLUwuIpfTFn2XKJc8E=
