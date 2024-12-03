@@ -90,7 +90,7 @@ func newLocalBuildService(ctx context.Context, opts *Options) (k6build.BuildServ
 		BuildEnv:  map[string]string{"GOWORK": "off"},
 		Catalog:   catfile,
 		CopyGoEnv: true,
-		CacheDir:  filepath.Join(cachedir, "build"),
+		StoreDir:  filepath.Join(cachedir, "build"),
 		Verbose:   slog.Default().Enabled(ctx, slog.LevelDebug),
 	}
 
