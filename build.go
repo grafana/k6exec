@@ -86,12 +86,16 @@ func newLocalBuildService(ctx context.Context, opts *Options) (k6build.BuildServ
 		return nil, err
 	}
 
-	conf := local.BuildServiceConfig{
-		BuildEnv:  map[string]string{"GOWORK": "off"},
-		Catalog:   catfile,
-		CopyGoEnv: true,
-		StoreDir:  filepath.Join(cachedir, "build"),
-		Verbose:   slog.Default().Enabled(ctx, slog.LevelDebug),
+	conf := local.Config{
+		Opts: local.Opts{
+			GoOpts: local.GoOpts{
+				Env:       map[string]string{"GOWORK": "off"},
+				CopyGoEnv: true,
+			},
+			Verbose: slog.Default().Enabled(ctx, slog.LevelDebug),
+		},
+		Catalog:  catfile,
+		StoreDir: filepath.Join(cachedir, "build"),
 	}
 
 	return local.NewBuildService(ctx, conf)
