@@ -7,7 +7,7 @@ require (
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6build v0.5.0
 	github.com/grafana/k6deps v0.1.8
-	github.com/grafana/k6pack v0.2.3
+	github.com/grafana/k6pack v0.2.4
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/samber/slog-logrus/v2 v2.5.2
 	github.com/sirupsen/logrus v1.9.3
@@ -19,7 +19,7 @@ require (
 require (
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/evanw/esbuild v0.24.0 // indirect
+	github.com/evanw/esbuild v0.24.2 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/grafana/k6catalog v0.2.4 // indirect
 	github.com/grafana/k6foundry v0.3.0 // indirect
