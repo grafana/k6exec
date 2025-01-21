@@ -44,6 +44,7 @@ jobs:
           echo $EGET_DIR >> $GITHUB_PATH
           echo "EGET_CONFIG=$EGET_CONFIG" >> $GITHUB_ENV
       - name: Download k6
+        shell: bash
         run: ./tools/getk6 $(< k6-version.txt)
 
       - name: Test
