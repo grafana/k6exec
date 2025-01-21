@@ -4,5 +4,5 @@
 /coverage.txt
 /k6exec
 /k6exec.exe
-/dist
-test*.db
+/build
+/cmd/k6exec/k6

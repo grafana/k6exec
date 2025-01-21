@@ -5,8 +5,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"runtime"
-	"strconv"
 	"testing"
 
 	"github.com/grafana/k6exec"
@@ -19,7 +17,7 @@ func Test_newState(t *testing.T) {
 	t.Setenv("K6_BUILD_SERVICE_URL", "")
 	t.Setenv("K6_EXTENSION_CATALOG_URL", "")
 
-	st := newState(lvar)
+	st := newState(lvar, nil)
 
 	require.Same(t, lvar, st.levelVar)
 	require.Empty(t, st.buildServiceURL)
@@ -28,7 +26,7 @@ func Test_newState(t *testing.T) {
 	t.Setenv("K6_BUILD_SERVICE_URL", "foo")
 	t.Setenv("K6_EXTENSION_CATALOG_URL", "bar")
 
-	st = newState(lvar)
+	st = newState(lvar, nil)
 
 	require.Equal(t, "foo", st.buildServiceURL)
 	require.Equal(t, "bar", st.extensionCatalogURL)
@@ -72,16 +70,9 @@ func Test_persistentPreRunE(t *testing.T) {
 func Test_preRunE(t *testing.T) {
 	t.Parallel()
 
-	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
-		t.Skip("Skip because k6build doesn't work on Windows yet!")
-	}
-
 	st := &state{
 		levelVar: new(slog.LevelVar),
-		Options: k6exec.Options{
-			CacheDir: t.TempDir(),
-			StateDir: t.TempDir(),
-		},
+		Options:  k6exec.Options{CacheDir: t.TempDir()},
 	}
 
 	sub := newSubcommand("version", st)
@@ -123,57 +114,31 @@ func Test_preRunE(t *testing.T) {
 	require.Error(t, st.preRunE(sub, []string{arg}))
 }
 
-//nolint:forbidigo
 func Test_runE(t *testing.T) {
 	t.Parallel()
 
-	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
-		t.Skip("Skip because k6build doesn't work on Windows yet!")
-	}
-
 	st := &state{
 		levelVar: new(slog.LevelVar),
-		Options: k6exec.Options{
-			CacheDir: t.TempDir(),
-			StateDir: t.TempDir(),
-		},
+		Options:  k6exec.Options{CacheDir: t.TempDir()},
 	}
 
 	err := st.preRunE(newSubcommand("version", st), nil)
 
 	require.NoError(t, err)
 
-	subdir := filepath.Join(st.StateDir, strconv.Itoa(os.Getpid()))
-
-	require.NoError(t, os.MkdirAll(subdir, 0o700))
-
-	name := filepath.Join(subdir, "hello.txt")
-
-	err = os.WriteFile(name, []byte("Hello, World!\n"), 0o600)
-
-	require.NoError(t, err)
-
-	require.True(t, exists(t, name))
+	require.True(t, exists(t, st.cmd.Path))
 
 	err = st.runE(nil, nil)
 
 	require.NoError(t, err)
 
-	require.False(t, exists(t, subdir))
-	require.True(t, exists(t, st.StateDir))
+	require.False(t, exists(t, st.cmd.Path))
 }
 
 func Test_helpFunc(t *testing.T) { //nolint:paralleltest
-	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
-		t.Skip("Skip because k6build doesn't work on Windows yet!")
-	}
-
 	st := &state{
 		levelVar: new(slog.LevelVar),
-		Options: k6exec.Options{
-			CacheDir: t.TempDir(),
-			StateDir: t.TempDir(),
-		},
+		Options:  k6exec.Options{CacheDir: t.TempDir()},
 	}
 
 	out := captureStderr(t, func() { st.helpFunc(newSubcommand("version", st), nil) })

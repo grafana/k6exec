@@ -8,7 +8,7 @@ import (
 
 type argsKey struct{}
 
-// SetArgs set arguments for cmd command and store the args in the context.
+// SetArgs set arguments for cmd command and store the args in the command context.
 func SetArgs(cmd *cobra.Command, args []string) {
 	ctx := cmd.Context()
 	if ctx == nil {
@@ -20,6 +20,7 @@ func SetArgs(cmd *cobra.Command, args []string) {
 	cmd.SetArgs(args)
 }
 
+// getArgs returns the arguments from the command context, which were previously stored by SetArgs.
 func getArgs(cmd *cobra.Command) []string {
 	ctx := cmd.Context()
 	if ctx == nil {

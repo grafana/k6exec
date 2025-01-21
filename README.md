@@ -31,6 +31,16 @@ Docker images are available on the GitHub [Packages](https://github.com/grafana/
 docker pull ghcr.io/grafana/k6exec:latest
 ```
 
+### Embedded k6
+
+For a better user experience, a k6 executable without extensions is embedded in k6exec. If no extensions are required to run the current k6 command, or the user does not use extensions in the script, the embedded k6 executable will be executed.
+
+The version of k6 to be embedded is found in the `k6-version.txt` file, whose value is currently:
+
+```txt file=k6-version.txt
+v0.56.0
+```
+
 ## Usage
 
 <!-- #region cli -->
@@ -70,7 +80,11 @@ To use the native builder, you only need to install the [Go language toolkit](ht
 
 The native builder uses a k6 extension catalog to resolve extension URLs and versions. The extension catalog URL has a default value. A different extension catalog URL can be specified in the `K6_EXTENSION_CATALOG_URL` environment variable or by using the `--extension-catalog-url` flag.
 
-### Pragma
+### Dependencies
+
+Dependencies can come from three sources: k6 test script, manifest file, `K6_DEPENDENCIES` environment variable. Instead of these three sources, a k6 archive can also be specified, which can contain all three sources.
+
+#### Pragma
 
 Version constraints can be specified using the JavaScript `"use ..."` pragma syntax for k6 and extensions. Put the following lines at the beginning of the test script:
 
@@ -92,7 +106,7 @@ The pragma syntax can also be used to specify an extension dependency that is no
 
 Read the version constraints syntax in the [Version Constraints](#version-constraints) section
 
-### Environment
+#### Environment
 
 The extensions to be used and optionally their version constraints can also be specified in the `K6_DEPENDENCIES` environment variable. The value of the environment variable K6_DEPENDENCIES is a list of elements separated by semicolons. Each element specifies an extension (or k6 itself) and optionally its version constraint.
 
@@ -100,7 +114,7 @@ The extensions to be used and optionally their version constraints can also be s
 k6>=0.52;k6/x/faker>=0.3;k6/x/sql>=0.4
 ```
 
-### Manifest
+#### Manifest
 
 The manifest file is a JSON file, the `dependencies` property of which can specify extension dependencies and version constraints. The value of the `dependencies` property is a JSON object. The property names of this object are the extension names (or k6) and the values ​​are the version constraints.
 
@@ -116,78 +130,13 @@ The manifest file is a JSON file, the `dependencies` property of which can speci
 
 The manifest file is a file named `package.json`, which is located closest to the k6 test script or the current directory, depending on whether the given subcommand has a test script argument (e.g. run, archive) or not (e.g. version). The `package.json` file is searched for up to the root of the directory hierarchy.
 
+### Embedded k6
+
+For a better user experience, a k6 executable without extensions is embedded in k6exec. If no extensions are required to run the current k6 command, or the user does not use extensions in the script, the embedded k6 executable will be executed.
+
 ### Limitations
 
 Version constraints can be specified in several sources ([pragma](#pragma), [environment](#environment), [manifest](#manifest)) but cannot be overwritten. That is, for a given extension, the version constraints from different sources must either be equal, or only one source can contain a version constraint.
-
-### Version Constraints
-
-*This section is based on the [Masterminds/semver] documentation.*
-
-#### Basic Comparisons
-
-There are two elements to the comparisons. First, a comparison string is a list
-of space or comma separated AND comparisons. These are then separated by || (OR)
-comparisons. For example, `">= 1.2 < 3.0.0 || >= 4.2.3"` is looking for a
-comparison that's greater than or equal to 1.2 and less than 3.0.0 or is
-greater than or equal to 4.2.3.
-
-The basic comparisons are:
-
-* `=`: equal (aliased to no operator)
-* `!=`: not equal
-* `>`: greater than
-* `<`: less than
-* `>=`: greater than or equal to
-* `<=`: less than or equal to
-
-#### Hyphen Range Comparisons
-
-There are multiple methods to handle ranges and the first is hyphens ranges.
-These look like:
-
-* `1.2 - 1.4.5` which is equivalent to `>= 1.2 <= 1.4.5`
-* `2.3.4 - 4.5` which is equivalent to `>= 2.3.4 <= 4.5`
-
-#### Wildcards In Comparisons
-
-The `x`, `X`, and `*` characters can be used as a wildcard character. This works
-for all comparison operators. When used on the `=` operator it falls
-back to the patch level comparison (see tilde below). For example,
-
-* `1.2.x` is equivalent to `>= 1.2.0, < 1.3.0`
-* `>= 1.2.x` is equivalent to `>= 1.2.0`
-* `<= 2.x` is equivalent to `< 3`
-* `*` is equivalent to `>= 0.0.0`
-
-#### Tilde Range Comparisons (Patch)
-
-The tilde (`~`) comparison operator is for patch level ranges when a minor
-version is specified and major level changes when the minor number is missing.
-For example,
-
-* `~1.2.3` is equivalent to `>= 1.2.3, < 1.3.0`
-* `~1` is equivalent to `>= 1, < 2`
-* `~2.3` is equivalent to `>= 2.3, < 2.4`
-* `~1.2.x` is equivalent to `>= 1.2.0, < 1.3.0`
-* `~1.x` is equivalent to `>= 1, < 2`
-
-#### Caret Range Comparisons (Major)
-
-The caret (`^`) comparison operator is for major level changes once a stable
-(1.0.0) release has occurred. Prior to a 1.0.0 release the minor versions acts
-as the API stability level. This is useful when comparisons of API versions as a
-major change is API breaking. For example,
-
-* `^1.2.3` is equivalent to `>= 1.2.3, < 2.0.0`
-* `^1.2.x` is equivalent to `>= 1.2.0, < 2.0.0`
-* `^2.3` is equivalent to `>= 2.3, < 3`
-* `^2.x` is equivalent to `>= 2.0.0, < 3`
-* `^0.2.3` is equivalent to `>=0.2.3 <0.3.0`
-* `^0.2` is equivalent to `>=0.2.0 <0.3.0`
-* `^0.0.3` is equivalent to `>=0.0.3 <0.0.4`
-* `^0.0` is equivalent to `>=0.0.0 <0.1.0`
-* `^0` is equivalent to `>=0.0.0 <1.0.0`
 
 [k6]: https://k6.io
 [extensions]: https://grafana.com/docs/k6/latest/extensions/
@@ -209,96 +158,12 @@ k6exec [flags] [command]
   -q, --quiet                          disable progress updates
       --usage                          print launcher usage
   -v, --verbose                        enable verbose logging
+      --version                        version for k6
 ```
 
 <!-- #endregion cli -->
 
-## Development
+## Contribute
 
-### Tasks
-
-This section contains a description of the tasks performed during development. Commands must be issued in the repository base directory. If you have the [xc](https://github.com/joerdav/xc) command-line tool, individual tasks can be executed simply by using the `xc task-name` command in the repository base directory.
-
-<details><summary>Click to expand</summary>
-
-#### readme
-
-Update documentation in README.md.
-
-```sh
-go run ./tools/gendoc README.md
-```
-
-#### lint
-
-Run the static analyzer.
-
-```
-golangci-lint run
-```
-
-#### test
-
-Run the tests.
-
-```
-go test -count 1 -race -coverprofile=coverage.txt ./...
-```
-
-#### coverage
-
-View the test coverage report.
-
-```
-go tool cover -html=coverage.txt
-```
-
-#### build
-
-Build the executable binary.
-
-This is the easiest way to create an executable binary (although the release process uses the goreleaser tool to create release versions).
-
-```sh
-go build -ldflags="-w -s" -o k6exec ./cmd/k6exec
-```
-
-#### snapshot
-
-Creating an executable binary with a snapshot version.
-
-The goreleaser command-line tool is used during the release process. During development, it is advisable to create binaries with the same tool from time to time.
-
-```sh
-goreleaser build --snapshot --clean --single-target -o k6exec
-```
-
-#### docker
-
-Building a Docker image. Before building the image, it is advisable to perform a snapshot build using goreleaser. To build the image, it is advisable to use the same `Docker.goreleaser` file that `goreleaser` uses during release.
-
-Requires: snapshot
-
-```sh
-docker build -t k6exec -f Dockerfile.goreleaser .
-```
-
-#### examples
-
-Run all scripts in the `examples` directory with a fresh build.
-
-Requires: clean, snapshot
-
-```sh
-find  examples -type f | xargs -n 1 ./k6exec run
-```
-
-#### clean
-
-Delete the build directory.
-
-```
-rm -rf build
-```
-
-</details>
+If you want to contribute or help with the development of **k6exec**, start by 
+reading [CONTRIBUTING.md](CONTRIBUTING.md).
