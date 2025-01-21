@@ -23,6 +23,10 @@ jobs:
           - macos-latest
           - windows-latest
     runs-on: ${{matrix.platform}}
+    env:
+      REGISTRY: ghcr.io
+      EGET_DIR: ${{github.workspace}}/.eget
+      EGET_CONFIG: ${{github.workspace}}/.eget/.eget.toml
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
@@ -30,6 +34,20 @@ jobs:
           go-version: "1.23.x"
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Setup eget
+        run: |
+          if test -f $EGET_CONFIG; then
+            exit 0
+          fi
+
+          curl https://zyedidia.github.io/eget.sh | sh
+          mkdir -p $EGET_DIR && mv eget $EGET_DIR
+          DIR=$(readlink -f $EGET_DIR) # workaround for windows + toml
+          printf "[global]\ntarget='$DIR'\nquiet=true\ngithub_token='${{ github.token }}'\n" > $EGET_CONFIG
+          echo $EGET_DIR >> $GITHUB_PATH
+          echo "EGET_CONFIG=$EGET_CONFIG" >> $GITHUB_ENV
+      - name: Download k6
+        run: ./tools/getk6
 
       - name: Test
         run: go test -race -count 1 ./...
