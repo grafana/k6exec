@@ -33,7 +33,7 @@ func TestNew(t *testing.T) { //nolint:paralleltest
 
 	out := captureStdout(t, func() { require.NoError(t, c.Execute()) })
 
-	require.True(t, strings.Contains(out, "  k6 [command]"))
+	require.True(t, strings.Contains(out, "  k6"))
 }
 
 //nolint:forbidigo

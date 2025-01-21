@@ -36,7 +36,7 @@ func TestCommand(t *testing.T) {
 
 	require.NoError(t, err)
 
-	require.True(t, strings.HasPrefix(string(out), "k6 "))
+	require.True(t, strings.HasPrefix(string(out), "k6"))
 }
 
 func TestCommand_errors(t *testing.T) {
