@@ -4,7 +4,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -13,13 +12,9 @@ import (
 )
 
 func TestNew(t *testing.T) { //nolint:paralleltest
-	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
-		t.Skip("Skip because k6build doesn't work on Windows yet!")
-	}
-
 	lvar := new(slog.LevelVar)
 
-	c := cmd.New(lvar)
+	c := cmd.New(lvar, nil)
 
 	require.Contains(t, c.Use, "k6exec")
 	require.Contains(t, c.Long, "k6exec")
@@ -35,19 +30,8 @@ func TestNew(t *testing.T) { //nolint:paralleltest
 	require.NotNil(t, flags.Lookup("verbose"))
 	require.NotNil(t, flags.Lookup("quiet"))
 	require.NotNil(t, flags.Lookup("no-color"))
-	require.NotNil(t, flags.Lookup("usage"))
-
-	c.SetArgs([]string{"--usage"})
 
 	out := captureStdout(t, func() { require.NoError(t, c.Execute()) })
-
-	require.Equal(t, c.Long+"\n"+c.UsageString(), out)
-
-	c = cmd.New(lvar)
-
-	c.SetArgs([]string{})
-
-	out = captureStdout(t, func() { require.NoError(t, c.Execute()) })
 
 	require.True(t, strings.Contains(out, "  k6 [command]"))
 }

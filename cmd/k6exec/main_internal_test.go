@@ -3,7 +3,6 @@ package main
 import (
 	"log/slog"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	sloglogrus "github.com/samber/slog-logrus/v2"
@@ -12,10 +11,6 @@ import (
 )
 
 func Test_newCmd(t *testing.T) { //nolint:paralleltest
-	if runtime.GOOS == "windows" { // TODO - Re-enable as soon as k6build supports Windows!
-		t.Skip("Skip because k6build doesn't work on windows yet!")
-	}
-
 	abs, err := filepath.Abs(filepath.Join("..", "..", "examples", "combined.js"))
 
 	require.NoError(t, err)
