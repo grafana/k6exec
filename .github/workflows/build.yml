@@ -24,11 +24,8 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup eget
+        shell: bash
         run: |
-          if test -f $EGET_CONFIG; then
-            exit 0
-          fi
-
           curl https://zyedidia.github.io/eget.sh | sh
           mkdir -p $EGET_DIR && mv eget $EGET_DIR
           DIR=$(readlink -f $EGET_DIR) # workaround for windows + toml
