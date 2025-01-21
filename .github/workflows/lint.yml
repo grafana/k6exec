@@ -20,6 +20,9 @@ jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
+    env:
+      EGET_DIR: ${{github.workspace}}/.eget
+      EGET_CONFIG: ${{github.workspace}}/.eget/.eget.toml
     steps:
       - name: Checkout
         uses: actions/checkout@v4
