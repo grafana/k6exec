@@ -1,21 +1,33 @@
 package k6exec
 
 import (
-	"fmt"
+	"context"
 	"net/http"
 	"net/url"
-	"os"
-	"path/filepath"
-	"strconv"
-	"syscall"
 
-	"github.com/adrg/xdg"
-	"github.com/gregjones/httpcache"
-	"github.com/gregjones/httpcache/diskcache"
+	"github.com/grafana/k6deps"
 )
 
 // Options contains the optional parameters of the Command function.
 type Options struct {
+	// Manifest contains the properties of the manifest file to be analyzed.
+	// If the Ignore property is not set and no manifest file is specified,
+	// the package.json file closest to the script is searched for.
+	Manifest k6deps.Source
+	// Env contains the properties of the environment variable to be analyzed.
+	// If the Ignore property is not set and no variable is specified,
+	// the value of the variable named K6_DEPENDENCIES is read.
+	Env k6deps.Source
+	// LookupEnv function is used to query the value of the environment variable
+	// specified in the Env option Name if the Contents of the Env option is empty.
+	// If empty, os.LookupEnv will be used.
+	LookupEnv func(key string) (value string, ok bool)
+	// FindManifest function is used to find manifest file for the given scriptfile
+	// if the Contents of Manifest option is empty.
+	// If the scriptfile parameter is empty, FindManifest starts searching
+	// for the manifest file from the current directory
+	// If missing, the closest manifest file will be used.
+	FindManifest func(scriptfile string) (contents []byte, filename string, ok bool, err error)
 	// AppName contains the name of the application. It is used to define the default value of CacheDir.
 	// If empty, it defaults to os.Args[0].
 	AppName string
@@ -23,12 +35,6 @@ type Options struct {
 	// Its default is determined based on the XDG Base Directory Specification.
 	// https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 	CacheDir string
-	// StateDir specifies the name of the directory where the k6 running state is stored,
-	// including the k6 binary and extension catalog. Each execution has a sub-directory,
-	// which is deleted after successful execution.
-	// Its default is determined based on the XDG Base Directory Specification.
-	// https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-	StateDir string
 	// Client is used during HTTP communication with the build service.
 	// If absent, http.DefaultClient will be used.
 	Client *http.Client
@@ -38,103 +44,20 @@ type Options struct {
 	// BuildServiceURL contains the URL of the k6 build service to be used.
 	// If the value is not nil, the k6 binary is built using the build service instead of the local build.
 	BuildServiceURL *url.URL
+	// Provisioner contains the optional custom k6 provisioning function.
+	// If it is missing, provisioning is done using k6provision.Provision().
+	Provisioner ProvisionerFunc
 }
 
-// DefaultExtensionCatalogURL contains the address of the default k6 extension catalog.
-const DefaultExtensionCatalogURL = "https://registry.k6.io/catalog.json"
+// ProvisionerFunc is a function type that implements a chain of responsibility for k6 provisioning.
+// If the function cannot or does not want to provision k6 based on the dependencies,
+// it continues to call the next provisioning function received in the next parameter.
+type ProvisionerFunc func(ctx context.Context, deps k6deps.Dependencies, exe string, next ProvisionerFunc) error
 
-func (o *Options) appname() string {
-	if o != nil && len(o.AppName) > 0 {
-		return o.AppName
+func (o *Options) provisioner() ProvisionerFunc {
+	if o != nil && o.Provisioner != nil {
+		return o.Provisioner
 	}
 
-	return filepath.Base(os.Args[0]) //nolint:forbidigo
-}
-
-func (o *Options) client() (*http.Client, error) {
-	if o != nil && o.Client != nil {
-		return o.Client, nil
-	}
-
-	cachedir, err := o.cacheDir()
-	if err != nil {
-		return nil, err
-	}
-
-	dir := filepath.Join(cachedir, "http")
-
-	err = os.MkdirAll(dir, syscall.S_IRUSR|syscall.S_IWUSR|syscall.S_IXUSR) //nolint:forbidigo
-	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrCache, err.Error())
-	}
-
-	transport := httpcache.NewTransport(diskcache.New(dir))
-
-	return &http.Client{Transport: transport}, nil
-}
-
-func (o *Options) extensionCatalogURL() *url.URL {
-	if o != nil && o.ExtensionCatalogURL != nil {
-		return o.ExtensionCatalogURL
-	}
-
-	loc, _ := url.Parse(DefaultExtensionCatalogURL)
-
-	return loc
-}
-
-func (o *Options) xdgDir(option string, xdgfunc func(string) (string, error), e error) (string, error) {
-	var xdgdir string
-
-	if o != nil && len(option) != 0 {
-		xdgdir = option
-	} else {
-		dir, err := xdgfunc(o.appname())
-		if err != nil {
-			return "", fmt.Errorf("%w: %s", e, err.Error())
-		}
-
-		xdgdir = dir
-	}
-
-	err := os.MkdirAll(xdgdir, syscall.S_IRUSR|syscall.S_IWUSR|syscall.S_IXUSR) //nolint:forbidigo
-	if err != nil {
-		return "", fmt.Errorf("%w: %s", e, err.Error())
-	}
-
-	return xdgdir, nil
-}
-
-func (o *Options) cacheDir() (string, error) {
-	var option string
-	if o != nil {
-		option = o.CacheDir
-	}
-
-	return o.xdgDir(option, xdg.CacheFile, ErrCache)
-}
-
-func (o *Options) stateDir() (string, error) {
-	var option string
-	if o != nil {
-		option = o.StateDir
-	}
-
-	return o.xdgDir(option, xdg.StateFile, ErrState)
-}
-
-func (o *Options) stateSubdir() (string, error) {
-	dir, err := o.stateDir()
-	if err != nil {
-		return "", err
-	}
-
-	dir = filepath.Join(dir, strconv.Itoa(os.Getpid())) //nolint:forbidigo
-
-	err = os.MkdirAll(dir, syscall.S_IRUSR|syscall.S_IWUSR|syscall.S_IXUSR) //nolint:forbidigo
-	if err != nil {
-		return "", err
-	}
-
-	return dir, nil
+	return noopProvisioner
 }

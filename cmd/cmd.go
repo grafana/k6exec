@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"log/slog"
 
+	"github.com/grafana/k6exec"
 	"github.com/spf13/cobra"
 )
 
@@ -12,17 +13,18 @@ import (
 var help string
 
 // New creates new cobra command for exec command.
-func New(levelVar *slog.LevelVar) *cobra.Command {
-	state := newState(levelVar)
+func New(levelVar *slog.LevelVar, provisioner k6exec.ProvisionerFunc) *cobra.Command {
+	state := newState(levelVar, provisioner)
 
 	root := &cobra.Command{
-		Use:               "k6exec [flags] [command]",
-		Short:             "Run k6 with extensions",
-		Long:              help,
-		SilenceUsage:      true,
-		SilenceErrors:     true,
-		DisableAutoGenTag: true,
-		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
+		Use:                "k6exec [flags] [command]",
+		Short:              "Run k6 with extensions",
+		Long:               help,
+		SilenceUsage:       true,
+		SilenceErrors:      true,
+		FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true},
+		DisableAutoGenTag:  true,
+		CompletionOptions:  cobra.CompletionOptions{DisableDefaultCmd: true},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if state.usage {
 				return nil
@@ -69,31 +71,11 @@ func New(levelVar *slog.LevelVar) *cobra.Command {
 
 	root.InitDefaultHelpFlag()
 	root.Flags().Lookup("help").Usage = "help for k6"
+	root.Flags().BoolVar(&state.version, "version", false, "version for k6")
 
 	root.MarkFlagsMutuallyExclusive("extension-catalog-url", "build-service-url")
 
 	return root
-}
-
-func scriptArg(cmd *cobra.Command, args []string) (string, bool) {
-	if len(cmd.Annotations) == 0 {
-		return "", false
-	}
-
-	if _, use := cmd.Annotations[useExtensions]; !use {
-		return "", false
-	}
-
-	if len(args) == 0 {
-		return "", false
-	}
-
-	last := args[len(args)-1]
-	if last[0] == '-' {
-		return "", false
-	}
-
-	return last, true
 }
 
 func newSubcommand(name string, state *state) *cobra.Command {
@@ -108,14 +90,8 @@ func newSubcommand(name string, state *state) *cobra.Command {
 	}
 	cmd.SetHelpFunc(state.helpFunc)
 
-	if name == "run" || name == "archive" || name == "inspect" {
-		cmd.Annotations = map[string]string{useExtensions: "true"}
-	}
-
 	return cmd
 }
-
-const useExtensions = "useExtensions"
 
 var commands = []string{ //nolint:gochecknoglobals
 	"help",

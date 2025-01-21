@@ -2,49 +2,49 @@ package k6exec
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 
-	"github.com/grafana/k6deps"
+	"github.com/grafana/k6provision"
 )
 
-// Command returns the exec.Cmd struct to execute k6 with the given dependencies and arguments.
-func Command(ctx context.Context, args []string, deps k6deps.Dependencies, opts *Options) (*exec.Cmd, error) {
-	dir, err := opts.stateSubdir()
+// Command returns the exec.Cmd struct to execute k6 with the given arguments.
+// If the given subcommand has a script argument, it analyzes the dependencies
+// in the script and provisions a k6 executable based on them.
+// In Options, you can also specify environment variable and manifest file as dependency sources.
+// If no errors occur, the provisioned k6 executable will be placed in a temporary directory.
+// The second return value is a cleanup function that is used to delete this temporary directory.
+func Command(ctx context.Context, args []string, opts *Options) (*exec.Cmd, func() error, error) {
+	deps, err := analyze(args, opts)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrState, err.Error())
+		return nil, nil, err
 	}
 
-	exe := filepath.Join(dir, k6binary)
-
-	loc, err := build(ctx, deps, opts)
+	dir, err := os.MkdirTemp("", "k6exec-*") //nolint:forbidigo
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrBuild, err.Error())
+		return nil, nil, err
 	}
 
-	client, err := opts.client()
-	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDownload, err.Error())
-	}
+	exe := filepath.Join(dir, k6provision.ExeName)
 
-	if err = download(ctx, loc, exe, client); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDownload, err.Error())
+	if err := opts.provisioner()(ctx, deps, exe, defaultProvisioner(opts)); err != nil {
+		return nil, nil, err
 	}
 
 	cmd := exec.CommandContext(ctx, exe, args...) //nolint:gosec
 
-	return cmd, nil
+	return cmd, func() error { return os.RemoveAll(dir) }, nil //nolint:forbidigo
 }
 
-var (
-	// ErrDownload is returned if an error occurs during download.
-	ErrDownload = errors.New("download error")
-	// ErrBuild is returned if an error occurs during build.
-	ErrBuild = errors.New("build error")
-	// ErrCache is returned if an error occurs during cache handling.
-	ErrCache = errors.New("cache error")
-	// ErrState is returned if an error occurs during state handling.
-	ErrState = errors.New("state error")
-)
+/*
+	sum := sha256.Sum256([]byte(deps.String()))
+	dir := filepath.Join(os.TempDir(), "k6exec-"+hex.EncodeToString(sum[:]))
+
+	if err := os.MkdirAll(dir, 0o700); err != nil { //nolint:forbidigo
+		return nil, nil, err
+	}
+
+	exe := filepath.Join(dir, k6provision.ExeName)
+
+*/

@@ -2,8 +2,10 @@
 package main
 
 import (
+	"errors"
 	"log/slog"
 	"os"
+	"os/exec"
 
 	"github.com/grafana/k6exec/cmd"
 	sloglogrus "github.com/samber/slog-logrus/v2"
@@ -35,7 +37,7 @@ func main() {
 }
 
 func newCmd(args []string, levelVar *slog.LevelVar) *cobra.Command {
-	root := cmd.New(levelVar)
+	root := cmd.New(levelVar, tryEmbedded)
 	root.Version = version
 
 	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help") {
@@ -47,9 +49,16 @@ func newCmd(args []string, levelVar *slog.LevelVar) *cobra.Command {
 	return root
 }
 
+//nolint:forbidigo
 func runCmd(cmd *cobra.Command) {
 	if err := cmd.Execute(); err != nil {
+		var eerr *exec.ExitError
+
+		if errors.As(err, &eerr) {
+			os.Exit(eerr.ExitCode())
+		}
+
 		slog.Error(formatError(err))
-		os.Exit(1) //nolint:forbidigo
+		os.Exit(1)
 	}
 }

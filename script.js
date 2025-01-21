@@ -1,7 +1,8 @@
 import { Faker } from "k6/x/faker";
 import sql from "k6/x/sql";
+import driver from "k6/x/sql/driver/ramsql";
 
-const db = sql.open("sqlite3", "./test-users.db");
+const db = sql.open(driver);
 
 export function setup() {
   db.exec(`
@@ -14,7 +15,7 @@ export function setup() {
   const faker = new Faker(11);
 
   db.exec(`
-    INSERT OR REPLACE INTO users (sub, name, email) VALUES (
+    INSERT INTO users (sub, name, email) VALUES (
       '${faker.internet.username()}',
       '${faker.person.firstName()} ${faker.person.lastName()}',
       '${faker.person.email()}'
@@ -26,7 +27,7 @@ export function teardown() {
 }
 
 export default function () {
-  const results = sql.query(db, "SELECT * FROM users");
+  const results = db.query("SELECT * FROM users");
 
   for (const row of results) {
     const { sub, name, email } = row;

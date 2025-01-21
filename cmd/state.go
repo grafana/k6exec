@@ -6,9 +6,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"strings"
 
-	"github.com/grafana/k6deps"
 	"github.com/grafana/k6exec"
 	"github.com/spf13/cobra"
 )
@@ -20,17 +18,21 @@ type state struct {
 	verbose             bool
 	quiet               bool
 	nocolor             bool
+	version             bool
 	usage               bool
 	levelVar            *slog.LevelVar
 
 	cmd *exec.Cmd
+
+	cleanup func() error
 }
 
 //nolint:forbidigo
-func newState(levelVar *slog.LevelVar) *state {
+func newState(levelVar *slog.LevelVar, provisioner k6exec.ProvisionerFunc) *state {
 	s := new(state)
 
 	s.levelVar = levelVar
+	s.Options.Provisioner = provisioner
 
 	if value, found := os.LookupEnv("K6_BUILD_SERVICE_URL"); found {
 		s.buildServiceURL = value
@@ -69,37 +71,15 @@ func (s *state) persistentPreRunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-func analyze(sub *cobra.Command, args []string) (k6deps.Dependencies, error) {
-	scriptname, hasScript := scriptArg(sub, args)
-	if !hasScript {
-		return k6deps.Analyze(&k6deps.Options{})
-	}
-
-	if strings.HasSuffix(scriptname, ".tar") {
-		return analyzeArchive(scriptname)
-	}
-
-	return analyzeScript(scriptname)
-}
-
-func analyzeScript(filename string) (k6deps.Dependencies, error) {
-	var opts k6deps.Options
-
-	opts.Script.Name = filename
-
-	return k6deps.Analyze(&opts)
-}
-
 func (s *state) preRunE(sub *cobra.Command, args []string) error {
-	deps, err := analyze(sub, args)
-	if err != nil {
-		return err
-	}
-
 	cmdargs := make([]string, 0, len(args))
 
 	if sub.Name() != s.Options.AppName {
 		cmdargs = append(cmdargs, sub.Name())
+	}
+
+	if s.version {
+		cmdargs = append(cmdargs, "--version")
 	}
 
 	if s.verbose {
@@ -120,7 +100,12 @@ func (s *state) preRunE(sub *cobra.Command, args []string) error {
 		cmdargs = append(cmdargs, args...)
 	}
 
-	cmd, err := k6exec.Command(context.Background(), cmdargs, deps, &s.Options)
+	ctx := sub.Context()
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	cmd, cleanup, err := k6exec.Command(ctx, cmdargs, &s.Options)
 	if err != nil {
 		return err
 	}
@@ -130,14 +115,24 @@ func (s *state) preRunE(sub *cobra.Command, args []string) error {
 	cmd.Stdin = os.Stdin   //nolint:forbidigo
 
 	s.cmd = cmd
+	s.cleanup = cleanup
 
 	return nil
 }
 
 func (s *state) runE(_ *cobra.Command, _ []string) error {
-	defer k6exec.CleanupState(&s.Options) //nolint:errcheck
+	var err error
 
-	return s.cmd.Run()
+	defer func() {
+		e := s.cleanup()
+		if err == nil {
+			err = e
+		}
+	}()
+
+	err = s.cmd.Run()
+
+	return err
 }
 
 func (s *state) helpFunc(cmd *cobra.Command, args []string) {

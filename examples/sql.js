@@ -1,4 +1,3 @@
-// source: https://github.com/grafana/xk6-sql/blob/v0.4.0/examples/sqlite3_test.js
 import sql from "k6/x/sql";
 import driver from "k6/x/sql/driver/ramsql";
 

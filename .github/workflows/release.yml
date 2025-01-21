@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io
+      EGET_DIR: ${{github.workspace}}/.eget
+      EGET_CONFIG: ${{github.workspace}}/.eget/.eget.toml
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,7 +22,19 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22.2"
+          go-version: "1.23.x"
+      - name: Setup eget
+        shell: bash
+        run: |
+          curl https://zyedidia.github.io/eget.sh | sh
+          mkdir -p $EGET_DIR && mv eget $EGET_DIR
+          DIR=$(readlink -f $EGET_DIR) # workaround for windows + toml
+          printf "[global]\ntarget='$DIR'\nquiet=true\ngithub_token='${{ github.token }}'\n" > $EGET_CONFIG
+          echo $EGET_DIR >> $GITHUB_PATH
+          echo "EGET_CONFIG=$EGET_CONFIG" >> $GITHUB_ENV
+      - name: Download k6
+        shell: bash
+        run: ./tools/getk6 $(< k6-version.txt)
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -35,7 +49,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
-          version: "2.0.1"
+          version: "2.4.7"
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,24 +1,19 @@
-name: lint
+name: build
 
 on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
   push:
-    branches:
+    branches-ignore:
       - main
     paths-ignore:
       - "docs/**"
       - README.md
       - "releases/**"
 
-permissions:
-  contents: read
-
 jobs:
-  lint:
-    name: lint
+  build:
     runs-on: ubuntu-latest
     env:
       EGET_DIR: ${{github.workspace}}/.eget
@@ -26,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup eget
         shell: bash
         run: |
@@ -36,11 +33,16 @@ jobs:
           echo $EGET_DIR >> $GITHUB_PATH
           echo "EGET_CONFIG=$EGET_CONFIG" >> $GITHUB_ENV
       - name: Download k6
-        shell: bash
         run: ./tools/getk6 $(< k6-version.txt)
-      - name: Go linter
-        uses: golangci/golangci-lint-action@v6
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          version: v1.62.2
-          args: --timeout=30m
-          install-mode: binary
+          go-version: "1.23.x"
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "2.4.7"
+          args: build --snapshot --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
