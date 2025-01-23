@@ -28,11 +28,10 @@ type state struct {
 }
 
 //nolint:forbidigo
-func newState(levelVar *slog.LevelVar, provisioner k6exec.ProvisionerFunc) *state {
+func newState(levelVar *slog.LevelVar) *state {
 	s := new(state)
 
 	s.levelVar = levelVar
-	s.Options.Provisioner = provisioner
 
 	if value, found := os.LookupEnv("K6_BUILD_SERVICE_URL"); found {
 		s.buildServiceURL = value

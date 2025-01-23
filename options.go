@@ -1,7 +1,6 @@
 package k6exec
 
 import (
-	"context"
 	"net/http"
 	"net/url"
 
@@ -44,20 +43,4 @@ type Options struct {
 	// BuildServiceURL contains the URL of the k6 build service to be used.
 	// If the value is not nil, the k6 binary is built using the build service instead of the local build.
 	BuildServiceURL *url.URL
-	// Provisioner contains the optional custom k6 provisioning function.
-	// If it is missing, provisioning is done using k6provision.Provision().
-	Provisioner ProvisionerFunc
-}
-
-// ProvisionerFunc is a function type that implements a chain of responsibility for k6 provisioning.
-// If the function cannot or does not want to provision k6 based on the dependencies,
-// it continues to call the next provisioning function received in the next parameter.
-type ProvisionerFunc func(ctx context.Context, deps k6deps.Dependencies, exe string, next ProvisionerFunc) error
-
-func (o *Options) provisioner() ProvisionerFunc {
-	if o != nil && o.Provisioner != nil {
-		return o.Provisioner
-	}
-
-	return noopProvisioner
 }

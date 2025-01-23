@@ -3,7 +3,6 @@ module github.com/grafana/k6exec
 go 1.22.2
 
 require (
-	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6deps v0.2.0
 	github.com/grafana/k6provision v0.1.0
@@ -15,6 +14,7 @@ require (
 )
 
 require (
+	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/adrg/xdg v0.5.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/evanw/esbuild v0.24.2 // indirect

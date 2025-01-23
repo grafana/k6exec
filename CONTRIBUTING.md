@@ -158,13 +158,6 @@ Requires
 
 [docker]: <#docker---building-a-docker-image>
 
-### embed - Get k6 release artifacts for embedding
-
-```sh
-./tools/getk6 $(< k6-version.txt)
-mdcode update
-```
-
 ### readme - Update README.md
 
 Update the CLI documentation and the example code in `README.md`.

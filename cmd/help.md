@@ -78,10 +78,6 @@ The manifest file is a JSON file, the `dependencies` property of which can speci
 
 The manifest file is a file named `package.json`, which is located closest to the k6 test script or the current directory, depending on whether the given subcommand has a test script argument (e.g. run, archive) or not (e.g. version). The `package.json` file is searched for up to the root of the directory hierarchy.
 
-### Embedded k6
-
-For a better user experience, a k6 executable without extensions is embedded in k6exec. If no extensions are required to run the current k6 command, or the user does not use extensions in the script, the embedded k6 executable will be executed.
-
 ### Limitations
 
 Version constraints can be specified in several sources ([pragma](#pragma), [environment](#environment), [manifest](#manifest)) but cannot be overwritten. That is, for a given extension, the version constraints from different sources must either be equal, or only one source can contain a version constraint.

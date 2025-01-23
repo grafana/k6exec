@@ -17,7 +17,7 @@ func Test_newState(t *testing.T) {
 	t.Setenv("K6_BUILD_SERVICE_URL", "")
 	t.Setenv("K6_EXTENSION_CATALOG_URL", "")
 
-	st := newState(lvar, nil)
+	st := newState(lvar)
 
 	require.Same(t, lvar, st.levelVar)
 	require.Empty(t, st.buildServiceURL)
@@ -26,7 +26,7 @@ func Test_newState(t *testing.T) {
 	t.Setenv("K6_BUILD_SERVICE_URL", "foo")
 	t.Setenv("K6_EXTENSION_CATALOG_URL", "bar")
 
-	st = newState(lvar, nil)
+	st = newState(lvar)
 
 	require.Equal(t, "foo", st.buildServiceURL)
 	require.Equal(t, "bar", st.extensionCatalogURL)
