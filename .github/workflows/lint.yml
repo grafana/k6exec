@@ -20,24 +20,9 @@ jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
-    env:
-      EGET_DIR: ${{github.workspace}}/.eget
-      EGET_CONFIG: ${{github.workspace}}/.eget/.eget.toml
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup eget
-        shell: bash
-        run: |
-          curl https://zyedidia.github.io/eget.sh | sh
-          mkdir -p $EGET_DIR && mv eget $EGET_DIR
-          DIR=$(readlink -f $EGET_DIR) # workaround for windows + toml
-          printf "[global]\ntarget='$DIR'\nquiet=true\ngithub_token='${{ github.token }}'\n" > $EGET_CONFIG
-          echo $EGET_DIR >> $GITHUB_PATH
-          echo "EGET_CONFIG=$EGET_CONFIG" >> $GITHUB_ENV
-      - name: Download k6
-        shell: bash
-        run: ./tools/getk6 $(< k6-version.txt)
       - name: Go linter
         uses: golangci/golangci-lint-action@v6
         with:

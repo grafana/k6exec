@@ -37,7 +37,7 @@ func main() {
 }
 
 func newCmd(args []string, levelVar *slog.LevelVar) *cobra.Command {
-	root := cmd.New(levelVar, tryEmbedded)
+	root := cmd.New(levelVar)
 	root.Version = version
 
 	if len(args) == 1 && (args[0] == "-h" || args[0] == "--help") {

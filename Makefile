@@ -13,7 +13,6 @@ __help__:
 	@echo '  clean    Clean the working directory'
 	@echo '  coverage View the test coverage report'
 	@echo '  docker   Building a Docker image'
-	@echo '  embed    Get k6 release artifacts for embedding'
 	@echo '  examples Run examples'
 	@echo '  format   Format the go source codes'
 	@echo '  lint     Run the linter'
@@ -53,14 +52,6 @@ coverage: test
 docker: 
 	@(\
 		docker build -t k6exec -f Dockerfile.goreleaser build;\
-	)
-
-# Get k6 release artifacts for embedding
-.PHONY: embed
-embed: 
-	@(\
-		./tools/getk6 $$(< k6-version.txt);\
-		mdcode update;\
 	)
 
 # Run examples

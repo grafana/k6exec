@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"log/slog"
 
-	"github.com/grafana/k6exec"
 	"github.com/spf13/cobra"
 )
 
@@ -13,8 +12,8 @@ import (
 var help string
 
 // New creates new cobra command for exec command.
-func New(levelVar *slog.LevelVar, provisioner k6exec.ProvisionerFunc) *cobra.Command {
-	state := newState(levelVar, provisioner)
+func New(levelVar *slog.LevelVar) *cobra.Command {
+	state := newState(levelVar)
 
 	root := &cobra.Command{
 		Use:                "k6exec [flags] [command]",

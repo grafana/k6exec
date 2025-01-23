@@ -14,7 +14,7 @@ import (
 func TestNew(t *testing.T) { //nolint:paralleltest
 	lvar := new(slog.LevelVar)
 
-	c := cmd.New(lvar, nil)
+	c := cmd.New(lvar)
 
 	require.Contains(t, c.Use, "k6exec")
 	require.Contains(t, c.Long, "k6exec")

@@ -31,16 +31,6 @@ Docker images are available on the GitHub [Packages](https://github.com/grafana/
 docker pull ghcr.io/grafana/k6exec:latest
 ```
 
-### Embedded k6
-
-For a better user experience, a k6 executable without extensions is embedded in k6exec. If no extensions are required to run the current k6 command, or the user does not use extensions in the script, the embedded k6 executable will be executed.
-
-The version of k6 to be embedded is found in the `k6-version.txt` file, whose value is currently:
-
-```txt file=k6-version.txt
-v0.56.0
-```
-
 ## Usage
 
 <!-- #region cli -->
@@ -129,10 +119,6 @@ The manifest file is a JSON file, the `dependencies` property of which can speci
 ```
 
 The manifest file is a file named `package.json`, which is located closest to the k6 test script or the current directory, depending on whether the given subcommand has a test script argument (e.g. run, archive) or not (e.g. version). The `package.json` file is searched for up to the root of the directory hierarchy.
-
-### Embedded k6
-
-For a better user experience, a k6 executable without extensions is embedded in k6exec. If no extensions are required to run the current k6 command, or the user does not use extensions in the script, the embedded k6 executable will be executed.
 
 ### Limitations
 

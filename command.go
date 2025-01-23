@@ -28,7 +28,7 @@ func Command(ctx context.Context, args []string, opts *Options) (*exec.Cmd, func
 
 	exe := filepath.Join(dir, k6provision.ExeName)
 
-	if err := opts.provisioner()(ctx, deps, exe, defaultProvisioner(opts)); err != nil {
+	if err := provision(ctx, deps, exe, opts); err != nil {
 		return nil, nil, err
 	}
 
