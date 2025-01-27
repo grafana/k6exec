@@ -52,12 +52,6 @@ func New(levelVar *slog.LevelVar) *cobra.Command {
 	flags := root.PersistentFlags()
 
 	flags.StringVar(
-		&state.extensionCatalogURL,
-		"extension-catalog-url",
-		state.extensionCatalogURL,
-		"URL of the k6 extension catalog to be used",
-	)
-	flags.StringVar(
 		&state.buildServiceURL,
 		"build-service-url",
 		state.buildServiceURL,
@@ -67,12 +61,9 @@ func New(levelVar *slog.LevelVar) *cobra.Command {
 	flags.BoolVarP(&state.quiet, "quiet", "q", false, "disable progress updates")
 	flags.BoolVar(&state.nocolor, "no-color", false, "disable colored output")
 	flags.BoolVar(&state.usage, "usage", false, "print launcher usage")
-
 	root.InitDefaultHelpFlag()
 	root.Flags().Lookup("help").Usage = "help for k6"
 	root.Flags().BoolVar(&state.version, "version", false, "version for k6")
-
-	root.MarkFlagsMutuallyExclusive("extension-catalog-url", "build-service-url")
 
 	return root
 }

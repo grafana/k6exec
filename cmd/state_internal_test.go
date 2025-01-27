@@ -7,29 +7,19 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/grafana/k6build/pkg/testutils"
 	"github.com/grafana/k6exec"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_newState(t *testing.T) {
-	lvar := new(slog.LevelVar)
+	t.Parallel()
 
-	t.Setenv("K6_BUILD_SERVICE_URL", "")
-	t.Setenv("K6_EXTENSION_CATALOG_URL", "")
+	lvar := new(slog.LevelVar)
 
 	st := newState(lvar)
 
 	require.Same(t, lvar, st.levelVar)
-	require.Empty(t, st.buildServiceURL)
-	require.Empty(t, st.extensionCatalogURL)
-
-	t.Setenv("K6_BUILD_SERVICE_URL", "foo")
-	t.Setenv("K6_EXTENSION_CATALOG_URL", "bar")
-
-	st = newState(lvar)
-
-	require.Equal(t, "foo", st.buildServiceURL)
-	require.Equal(t, "bar", st.extensionCatalogURL)
 }
 
 func Test_persistentPreRunE(t *testing.T) {
@@ -38,26 +28,15 @@ func Test_persistentPreRunE(t *testing.T) {
 	st := &state{levelVar: new(slog.LevelVar)}
 
 	require.NoError(t, st.persistentPreRunE(nil, nil))
-	require.Nil(t, st.BuildServiceURL)
-	require.Nil(t, st.ExtensionCatalogURL)
+	require.Empty(t, st.BuildServiceURL)
 	require.Equal(t, slog.LevelInfo, st.levelVar.Level())
 
 	st.buildServiceURL = "http://example.com"
-	st.extensionCatalogURL = "http://example.net"
 
 	require.NoError(t, st.persistentPreRunE(nil, nil))
-	require.Equal(t, "http://example.com", st.BuildServiceURL.String())
-	require.Equal(t, "http://example.net", st.ExtensionCatalogURL.String())
-
-	st.buildServiceURL = "http://example.com/%"
-	require.Error(t, st.persistentPreRunE(nil, nil))
+	require.Equal(t, "http://example.com", st.BuildServiceURL)
 
 	st.buildServiceURL = "http://example.com"
-	st.extensionCatalogURL = "http://example.net/%"
-	require.Error(t, st.persistentPreRunE(nil, nil))
-
-	st.buildServiceURL = "http://example.com"
-	st.extensionCatalogURL = "http://example.net"
 	st.verbose = true
 
 	require.NoError(t, st.persistentPreRunE(nil, nil))
@@ -70,9 +49,16 @@ func Test_persistentPreRunE(t *testing.T) {
 func Test_preRunE(t *testing.T) {
 	t.Parallel()
 
+	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
+		WorkDir: t.TempDir(),
+	})
+	require.NoError(t, err)
+
+	t.Cleanup(env.Cleanup)
+
 	st := &state{
 		levelVar: new(slog.LevelVar),
-		Options:  k6exec.Options{CacheDir: t.TempDir()},
+		Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
 	}
 
 	sub := newSubcommand("version", st)
@@ -117,12 +103,20 @@ func Test_preRunE(t *testing.T) {
 func Test_runE(t *testing.T) {
 	t.Parallel()
 
+	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
+		WorkDir:    t.TempDir(),
+		CatalogURL: "../testdata/minimal-catalog.json",
+	})
+	require.NoError(t, err)
+
+	t.Cleanup(env.Cleanup)
+
 	st := &state{
 		levelVar: new(slog.LevelVar),
-		Options:  k6exec.Options{CacheDir: t.TempDir()},
+		Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
 	}
 
-	err := st.preRunE(newSubcommand("version", st), nil)
+	err = st.preRunE(newSubcommand("version", st), nil)
 
 	require.NoError(t, err)
 
@@ -131,14 +125,20 @@ func Test_runE(t *testing.T) {
 	err = st.runE(nil, nil)
 
 	require.NoError(t, err)
-
-	require.False(t, exists(t, st.cmd.Path))
 }
 
 func Test_helpFunc(t *testing.T) { //nolint:paralleltest
+	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
+		WorkDir:    t.TempDir(),
+		CatalogURL: "../testdata/minimal-catalog.json",
+	})
+	require.NoError(t, err)
+
+	t.Cleanup(env.Cleanup)
+
 	st := &state{
 		levelVar: new(slog.LevelVar),
-		Options:  k6exec.Options{CacheDir: t.TempDir()},
+		Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
 	}
 
 	out := captureStderr(t, func() { st.helpFunc(newSubcommand("version", st), nil) })

@@ -13,7 +13,7 @@ k6exec is a launcher library for k6 with seamless use of extensions. The launche
 
 k6exec is primarily used as a go library. In addition, it also contains a command-line tool, which is suitable for listing the dependencies of k6 test scripts.
 
-The command line tool can be integrated into other command line tools as a subcommand. For this purpose, the library also contains the functionality of the command line tool as a factrory function that returns [cobra.Command](https://pkg.go.dev/github.com/spf13/cobra#Command).
+The command line tool can be integrated into other command line tools as a subcommand. For this purpose, the library also contains the functionality of the command line tool as a factory function that returns [cobra.Command](https://pkg.go.dev/github.com/spf13/cobra#Command).
 
 ## Install
 
@@ -54,7 +54,7 @@ Since k6exec tries to emulate the `k6` command line, the `help` command or the `
 
 ### Prerequisites
 
-k6exec tries to provide the appropriate k6 executable after detecting the extension dependencies. This can be done using a build service or a native builder.
+k6exec tries to provide the appropriate k6 executable after detecting the extension dependencies using a build service.
 
 #### Build Service
 
@@ -63,12 +63,6 @@ No additional installation is required to use the build service, just provide th
 The build service URL can be specified in the `K6_BUILD_SERVICE_URL` environment variable or by using the `--build-service-url` flag.
 
 There is no default URL for the build service, otherwise k6exec will automatically provide k6 with the native builder.
-
-#### Native Builder
-
-To use the native builder, you only need to install the [Go language toolkit](https://go.dev/doc/install).
-
-The native builder uses a k6 extension catalog to resolve extension URLs and versions. The extension catalog URL has a default value. A different extension catalog URL can be specified in the `K6_EXTENSION_CATALOG_URL` environment variable or by using the `--extension-catalog-url` flag.
 
 ### Dependencies
 
@@ -137,14 +131,13 @@ k6exec [flags] [command]
 ### Flags
 
 ```
-      --build-service-url string       URL of the k6 build service to be used
-      --extension-catalog-url string   URL of the k6 extension catalog to be used
-  -h, --help                           help for k6
-      --no-color                       disable colored output
-  -q, --quiet                          disable progress updates
-      --usage                          print launcher usage
-  -v, --verbose                        enable verbose logging
-      --version                        version for k6
+      --build-service-url string   URL of the k6 build service to be used
+  -h, --help                       help for k6
+      --no-color                   disable colored output
+  -q, --quiet                      disable progress updates
+      --usage                      print launcher usage
+  -v, --verbose                    enable verbose logging
+      --version                    version for k6
 ```
 
 <!-- #endregion cli -->

@@ -1,11 +1,11 @@
 module github.com/grafana/k6exec
 
-go 1.22.2
+go 1.22.4
 
 require (
 	github.com/grafana/clireadme v0.1.0
+	github.com/grafana/k6build v0.5.4
 	github.com/grafana/k6deps v0.2.0
-	github.com/grafana/k6provision v0.1.0
 	github.com/samber/slog-logrus/v2 v2.5.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
@@ -14,14 +14,25 @@ require (
 )
 
 require (
+	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/prometheus/client_golang v1.20.5 // indirect
+	github.com/prometheus/client_model v0.6.1 // indirect
+	github.com/prometheus/common v0.55.0 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
+)
+
+require (
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/adrg/xdg v0.5.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/evanw/esbuild v0.24.2 // indirect
 	github.com/google/btree v1.1.2 // indirect
-	github.com/grafana/k6build v0.5.2 // indirect
-	github.com/grafana/k6foundry v0.3.0 // indirect
+	github.com/grafana/k6foundry v0.3.1 // indirect
 	github.com/grafana/k6pack v0.2.4 // indirect
+	github.com/grafana/k6provider v0.1.6
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect

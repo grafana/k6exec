@@ -4,19 +4,25 @@ import (
 	"context"
 
 	"github.com/grafana/k6deps"
-	"github.com/grafana/k6provision"
+	"github.com/grafana/k6provider"
 )
 
-func provision(ctx context.Context, deps k6deps.Dependencies, exe string, opts *Options) error {
-	popts := new(k6provision.Options)
+func provision(ctx context.Context, deps k6deps.Dependencies, opts *Options) (string, error) {
+	config := k6provider.Config{}
 
 	if opts != nil {
-		popts.AppName = opts.AppName
-		popts.CacheDir = opts.CacheDir
-		popts.Client = opts.Client
-		popts.BuildServiceURL = opts.BuildServiceURL
-		popts.ExtensionCatalogURL = opts.ExtensionCatalogURL
+		config.BuildServiceURL = opts.BuildServiceURL
 	}
 
-	return k6provision.Provision(ctx, deps, exe, popts)
+	provider, err := k6provider.NewProvider(config)
+	if err != nil {
+		return "", err
+	}
+
+	binary, err := provider.GetBinary(ctx, deps)
+	if err != nil {
+		return "", err
+	}
+
+	return binary.Path, nil
 }

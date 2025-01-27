@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"log/slog"
-	"net/url"
 	"os"
 	"os/exec"
 
@@ -13,54 +12,28 @@ import (
 
 type state struct {
 	k6exec.Options
-	buildServiceURL     string
-	extensionCatalogURL string
-	verbose             bool
-	quiet               bool
-	nocolor             bool
-	version             bool
-	usage               bool
-	levelVar            *slog.LevelVar
-
-	cmd *exec.Cmd
-
-	cleanup func() error
+	buildServiceURL string
+	verbose         bool
+	quiet           bool
+	nocolor         bool
+	version         bool
+	usage           bool
+	levelVar        *slog.LevelVar
+	cmd             *exec.Cmd
+	cleanup         func() error
 }
 
-//nolint:forbidigo
 func newState(levelVar *slog.LevelVar) *state {
 	s := new(state)
 
 	s.levelVar = levelVar
-
-	if value, found := os.LookupEnv("K6_BUILD_SERVICE_URL"); found {
-		s.buildServiceURL = value
-	}
-
-	if value, found := os.LookupEnv("K6_EXTENSION_CATALOG_URL"); found {
-		s.extensionCatalogURL = value
-	}
 
 	return s
 }
 
 func (s *state) persistentPreRunE(_ *cobra.Command, _ []string) error {
 	if len(s.buildServiceURL) > 0 {
-		val, err := url.Parse(s.buildServiceURL)
-		if err != nil {
-			return err
-		}
-
-		s.Options.BuildServiceURL = val
-	}
-
-	if len(s.extensionCatalogURL) > 0 {
-		val, err := url.Parse(s.extensionCatalogURL)
-		if err != nil {
-			return err
-		}
-
-		s.Options.ExtensionCatalogURL = val
+		s.Options.BuildServiceURL = s.buildServiceURL
 	}
 
 	if s.verbose && s.levelVar != nil {
@@ -122,6 +95,7 @@ func (s *state) preRunE(sub *cobra.Command, args []string) error {
 func (s *state) runE(_ *cobra.Command, _ []string) error {
 	var err error
 
+	// FIXME: I think this code is not setting the error to the cleanup function (pablochacin)
 	defer func() {
 		e := s.cleanup()
 		if err == nil {
@@ -138,6 +112,9 @@ func (s *state) helpFunc(cmd *cobra.Command, args []string) {
 	err := s.preRunE(cmd, append(args, "-h"))
 	if err != nil {
 		cmd.PrintErr(err)
+		// FIXME: added this return because in case of error provisioning the binary,
+		// it doesn't make sense to continue (pablochacin)
+		return
 	}
 
 	err = s.runE(cmd, args)

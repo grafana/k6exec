@@ -4,7 +4,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/grafana/k6exec/cmd"
@@ -25,18 +24,13 @@ func TestNew(t *testing.T) { //nolint:paralleltest
 
 	flags := c.PersistentFlags()
 
-	require.NotNil(t, flags.Lookup("extension-catalog-url"))
 	require.NotNil(t, flags.Lookup("build-service-url"))
 	require.NotNil(t, flags.Lookup("verbose"))
 	require.NotNil(t, flags.Lookup("quiet"))
 	require.NotNil(t, flags.Lookup("no-color"))
-
-	out := captureStdout(t, func() { require.NoError(t, c.Execute()) })
-
-	require.True(t, strings.Contains(out, "  k6"))
 }
 
-//nolint:forbidigo
+//nolint:forbidigo,unused
 func captureStdout(t *testing.T, fn func()) string {
 	t.Helper()
 

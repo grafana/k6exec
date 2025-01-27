@@ -22,12 +22,6 @@ The build service URL can be specified in the `K6_BUILD_SERVICE_URL` environment
 
 There is no default URL for the build service, otherwise k6exec will automatically provide k6 with the native builder.
 
-#### Native Builder
-
-To use the native builder, you only need to install the [Go language toolkit](https://go.dev/doc/install).
-
-The native builder uses a k6 extension catalog to resolve extension URLs and versions. The extension catalog URL has a default value. A different extension catalog URL can be specified in the `K6_EXTENSION_CATALOG_URL` environment variable or by using the `--extension-catalog-url` flag.
-
 ### Dependencies
 
 Dependencies can come from three sources: k6 test script, manifest file, `K6_DEPENDENCIES` environment variable. Instead of these three sources, a k6 archive can also be specified, which can contain all three sources.

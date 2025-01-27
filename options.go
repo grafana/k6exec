@@ -1,9 +1,6 @@
 package k6exec
 
 import (
-	"net/http"
-	"net/url"
-
 	"github.com/grafana/k6deps"
 )
 
@@ -30,17 +27,7 @@ type Options struct {
 	// AppName contains the name of the application. It is used to define the default value of CacheDir.
 	// If empty, it defaults to os.Args[0].
 	AppName string
-	// CacheDir specifies the name of the directory where the cacheable files can be cached.
-	// Its default is determined based on the XDG Base Directory Specification.
-	// https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-	CacheDir string
-	// Client is used during HTTP communication with the build service.
-	// If absent, http.DefaultClient will be used.
-	Client *http.Client
-	// ExtensionCatalogURL contains the URL of the k6 extension catalog to be used.
-	// If absent, DefaultExtensionCatalogURL will be used.
-	ExtensionCatalogURL *url.URL
 	// BuildServiceURL contains the URL of the k6 build service to be used.
 	// If the value is not nil, the k6 binary is built using the build service instead of the local build.
-	BuildServiceURL *url.URL
+	BuildServiceURL string
 }
