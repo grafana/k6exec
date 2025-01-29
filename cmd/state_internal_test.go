@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_interal_state(t *testing.T) {
+func Test_interal_state(t *testing.T) { //nolint:tparallel
 	t.Parallel()
 
 	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
@@ -22,9 +22,7 @@ func Test_interal_state(t *testing.T) {
 
 	t.Cleanup(env.Cleanup)
 
-	t.Run("Test_newState", func(t *testing.T) {
-		t.Parallel()
-
+	t.Run("Test_newState", func(t *testing.T) { //nolint:paralleltest
 		lvar := new(slog.LevelVar)
 
 		st := newState(lvar)
@@ -32,9 +30,7 @@ func Test_interal_state(t *testing.T) {
 		require.Same(t, lvar, st.levelVar)
 	})
 
-	t.Run("Test_persistentPreRunE", func(t *testing.T) {
-		t.Parallel()
-
+	t.Run("Test_persistentPreRunE", func(t *testing.T) { //nolint:paralleltest
 		st := &state{levelVar: new(slog.LevelVar)}
 
 		require.NoError(t, st.persistentPreRunE(nil, nil))
@@ -56,9 +52,7 @@ func Test_interal_state(t *testing.T) {
 		require.NoError(t, st.persistentPreRunE(nil, nil))
 	})
 
-	t.Run("Test_preRunE", func(t *testing.T) {
-		t.Parallel()
-
+	t.Run("Test_preRunE", func(t *testing.T) { //nolint:paralleltest
 		st := &state{
 			levelVar: new(slog.LevelVar),
 			Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
@@ -103,9 +97,7 @@ func Test_interal_state(t *testing.T) {
 		require.Error(t, st.preRunE(sub, []string{arg}))
 	})
 
-	t.Run("Test_runE", func(t *testing.T) {
-		t.Parallel()
-
+	t.Run("Test_runE", func(t *testing.T) { //nolint:paralleltest
 		st := &state{
 			levelVar: new(slog.LevelVar),
 			Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
@@ -122,9 +114,7 @@ func Test_interal_state(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("Test_helpFunc", func(t *testing.T) {
-		t.Parallel()
-
+	t.Run("Test_helpFunc", func(t *testing.T) { //nolint:paralleltest
 		st := &state{
 			levelVar: new(slog.LevelVar),
 			Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
