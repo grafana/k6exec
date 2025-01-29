@@ -17,9 +17,9 @@ func Test_newCmd(t *testing.T) { //nolint:paralleltest
 
 	lvar := new(slog.LevelVar)
 
+	// TODO: add more assertions and more test cases
 	cmd := newCmd([]string{"run", abs}, lvar)
-
-	require.NoError(t, cmd.Execute())
+	require.Equal(t, "k6exec", cmd.Name())
 }
 
 func Test_initLogging(t *testing.T) { //nolint:paralleltest

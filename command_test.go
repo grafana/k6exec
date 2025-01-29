@@ -2,32 +2,35 @@ package k6exec_test
 
 import (
 	"context"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 
+	"github.com/grafana/k6build/pkg/testutils"
 	"github.com/grafana/k6deps"
 	"github.com/grafana/k6exec"
-	"github.com/grafana/k6provision"
+	"github.com/grafana/k6provider"
+
 	"github.com/stretchr/testify/require"
 )
 
 func TestCommand(t *testing.T) {
 	t.Parallel()
 
-	srv := testWebServer(t)
-	defer srv.Close()
-
-	u, err := url.Parse(srv.URL + "/minimal-catalog.json")
+	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
+		WorkDir:    t.TempDir(),
+		CatalogURL: "testdata/minimal-catalog.json",
+	})
 	require.NoError(t, err)
 
-	ctx := context.Background()
+	t.Cleanup(env.Cleanup)
 
-	opts := &k6exec.Options{ExtensionCatalogURL: u, Env: k6deps.Source{Ignore: true}, Manifest: k6deps.Source{Ignore: true}}
+	opts := &k6exec.Options{
+		Env:             k6deps.Source{Ignore: true},
+		Manifest:        k6deps.Source{Ignore: true},
+		BuildServiceURL: env.BuildServiceURL(),
+	}
 
-	cmd, cleanup, err := k6exec.Command(ctx, []string{"version"}, opts)
+	cmd, cleanup, err := k6exec.Command(context.TODO(), []string{"version"}, opts)
 	defer func() { require.NoError(t, cleanup()) }()
 
 	require.NoError(t, err)
@@ -42,31 +45,21 @@ func TestCommand(t *testing.T) {
 func TestCommand_errors(t *testing.T) {
 	t.Parallel()
 
-	srv := testWebServer(t)
-	defer srv.Close()
-
-	u, err := url.Parse(srv.URL + "/missing-catalog.json")
+	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
+		WorkDir:    t.TempDir(),
+		CatalogURL: "testdata/empty-catalog.json",
+	})
 	require.NoError(t, err)
 
-	ctx := context.Background()
+	t.Cleanup(env.Cleanup)
 
-	_, _, err = k6exec.Command(ctx, nil, &k6exec.Options{AppName: invalidAppName(t)})
+	opts := &k6exec.Options{
+		Env:             k6deps.Source{Ignore: true},
+		Manifest:        k6deps.Source{Ignore: true},
+		BuildServiceURL: env.BuildServiceURL(),
+	}
+
+	_, _, err = k6exec.Command(context.TODO(), nil, opts)
 	require.Error(t, err)
-	require.ErrorIs(t, err, k6provision.ErrCache)
-
-	_, _, err = k6exec.Command(ctx, nil, &k6exec.Options{ExtensionCatalogURL: u})
-	require.Error(t, err)
-	require.ErrorIs(t, err, k6provision.ErrBuild)
-}
-
-func testWebServer(t *testing.T) *httptest.Server {
-	t.Helper()
-
-	return httptest.NewServer(http.FileServer(http.Dir("testdata")))
-}
-
-func invalidAppName(t *testing.T) string {
-	t.Helper()
-
-	return strings.Repeat("too long", 2048)
+	require.ErrorIs(t, err, k6provider.ErrInvalidParameters)
 }
