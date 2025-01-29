@@ -43,7 +43,7 @@ func scriptArg(args []string) (string, bool) {
 	}
 
 	cmd := args[0]
-	if cmd != "run" && cmd != "archive" && cmd != "inspect" {
+	if cmd != "run" && cmd != "archive" && cmd != "inspect" && cmd != "cloud" {
 		return "", false
 	}
 
