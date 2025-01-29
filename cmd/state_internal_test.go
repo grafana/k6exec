@@ -12,41 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_newState(t *testing.T) {
-	t.Parallel()
-
-	lvar := new(slog.LevelVar)
-
-	st := newState(lvar)
-
-	require.Same(t, lvar, st.levelVar)
-}
-
-func Test_persistentPreRunE(t *testing.T) {
-	t.Parallel()
-
-	st := &state{levelVar: new(slog.LevelVar)}
-
-	require.NoError(t, st.persistentPreRunE(nil, nil))
-	require.Empty(t, st.BuildServiceURL)
-	require.Equal(t, slog.LevelInfo, st.levelVar.Level())
-
-	st.buildServiceURL = "http://example.com"
-
-	require.NoError(t, st.persistentPreRunE(nil, nil))
-	require.Equal(t, "http://example.com", st.BuildServiceURL)
-
-	st.buildServiceURL = "http://example.com"
-	st.verbose = true
-
-	require.NoError(t, st.persistentPreRunE(nil, nil))
-	require.Equal(t, slog.LevelDebug, st.levelVar.Level())
-
-	st.levelVar = nil
-	require.NoError(t, st.persistentPreRunE(nil, nil))
-}
-
-func Test_preRunE(t *testing.T) {
+func Test_interal_state(t *testing.T) {
 	t.Parallel()
 
 	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
@@ -56,94 +22,118 @@ func Test_preRunE(t *testing.T) {
 
 	t.Cleanup(env.Cleanup)
 
-	st := &state{
-		levelVar: new(slog.LevelVar),
-		Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
-	}
+	t.Run("Test_newState", func(t *testing.T) {
+		t.Parallel()
 
-	sub := newSubcommand("version", st)
+		lvar := new(slog.LevelVar)
 
-	require.NoError(t, st.preRunE(sub, nil))
-	require.NotContains(t, st.cmd.Args, "-v")
-	require.NotContains(t, st.cmd.Args, "-q")
-	require.NotContains(t, st.cmd.Args, "--no-color")
+		st := newState(lvar)
 
-	st.verbose = true
-	st.nocolor = true
-	require.NoError(t, st.preRunE(sub, nil))
-	require.Contains(t, st.cmd.Args, "-v")
-	require.NotContains(t, st.cmd.Args, "-q")
-	require.Contains(t, st.cmd.Args, "--no-color")
-
-	st.verbose = false
-	st.nocolor = false
-	st.quiet = true
-	require.NoError(t, st.preRunE(sub, nil))
-	require.NotContains(t, st.cmd.Args, "-v")
-	require.Contains(t, st.cmd.Args, "-q")
-	require.NotContains(t, st.cmd.Args, "--no-color")
-
-	st.quiet = false
-
-	sub = newSubcommand("run", st)
-
-	arg := filepath.Join("testdata", "script.js")
-	require.NoError(t, st.preRunE(sub, []string{arg}))
-
-	arg = filepath.Join("testdata", "archive.tar")
-	require.NoError(t, st.preRunE(sub, []string{arg}))
-
-	arg = filepath.Join("testdata", "invalid_constraint.js")
-	require.Error(t, st.preRunE(sub, []string{arg}))
-
-	arg = filepath.Join("testdata", "no_such_version.js")
-	require.Error(t, st.preRunE(sub, []string{arg}))
-}
-
-func Test_runE(t *testing.T) {
-	t.Parallel()
-
-	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
-		WorkDir:    t.TempDir(),
-		CatalogURL: "../testdata/minimal-catalog.json",
+		require.Same(t, lvar, st.levelVar)
 	})
-	require.NoError(t, err)
 
-	t.Cleanup(env.Cleanup)
+	t.Run("Test_persistentPreRunE", func(t *testing.T) {
+		t.Parallel()
 
-	st := &state{
-		levelVar: new(slog.LevelVar),
-		Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
-	}
+		st := &state{levelVar: new(slog.LevelVar)}
 
-	err = st.preRunE(newSubcommand("version", st), nil)
+		require.NoError(t, st.persistentPreRunE(nil, nil))
+		require.Empty(t, st.BuildServiceURL)
+		require.Equal(t, slog.LevelInfo, st.levelVar.Level())
 
-	require.NoError(t, err)
+		st.buildServiceURL = "http://example.com"
 
-	require.True(t, exists(t, st.cmd.Path))
+		require.NoError(t, st.persistentPreRunE(nil, nil))
+		require.Equal(t, "http://example.com", st.BuildServiceURL)
 
-	err = st.runE(nil, nil)
+		st.buildServiceURL = "http://example.com"
+		st.verbose = true
 
-	require.NoError(t, err)
-}
+		require.NoError(t, st.persistentPreRunE(nil, nil))
+		require.Equal(t, slog.LevelDebug, st.levelVar.Level())
 
-func Test_helpFunc(t *testing.T) { //nolint:paralleltest
-	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
-		WorkDir:    t.TempDir(),
-		CatalogURL: "../testdata/minimal-catalog.json",
+		st.levelVar = nil
+		require.NoError(t, st.persistentPreRunE(nil, nil))
 	})
-	require.NoError(t, err)
 
-	t.Cleanup(env.Cleanup)
+	t.Run("Test_preRunE", func(t *testing.T) {
+		t.Parallel()
 
-	st := &state{
-		levelVar: new(slog.LevelVar),
-		Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
-	}
+		st := &state{
+			levelVar: new(slog.LevelVar),
+			Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
+		}
 
-	out := captureStderr(t, func() { st.helpFunc(newSubcommand("version", st), nil) })
+		sub := newSubcommand("version", st)
 
-	require.Empty(t, out)
+		require.NoError(t, st.preRunE(sub, nil))
+		require.NotContains(t, st.cmd.Args, "-v")
+		require.NotContains(t, st.cmd.Args, "-q")
+		require.NotContains(t, st.cmd.Args, "--no-color")
+
+		st.verbose = true
+		st.nocolor = true
+		require.NoError(t, st.preRunE(sub, nil))
+		require.Contains(t, st.cmd.Args, "-v")
+		require.NotContains(t, st.cmd.Args, "-q")
+		require.Contains(t, st.cmd.Args, "--no-color")
+
+		st.verbose = false
+		st.nocolor = false
+		st.quiet = true
+		require.NoError(t, st.preRunE(sub, nil))
+		require.NotContains(t, st.cmd.Args, "-v")
+		require.Contains(t, st.cmd.Args, "-q")
+		require.NotContains(t, st.cmd.Args, "--no-color")
+
+		st.quiet = false
+
+		sub = newSubcommand("run", st)
+
+		arg := filepath.Join("testdata", "script.js")
+		require.NoError(t, st.preRunE(sub, []string{arg}))
+
+		arg = filepath.Join("testdata", "archive.tar")
+		require.NoError(t, st.preRunE(sub, []string{arg}))
+
+		arg = filepath.Join("testdata", "invalid_constraint.js")
+		require.Error(t, st.preRunE(sub, []string{arg}))
+
+		arg = filepath.Join("testdata", "no_such_version.js")
+		require.Error(t, st.preRunE(sub, []string{arg}))
+	})
+
+	t.Run("Test_runE", func(t *testing.T) {
+		t.Parallel()
+
+		st := &state{
+			levelVar: new(slog.LevelVar),
+			Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
+		}
+
+		err = st.preRunE(newSubcommand("version", st), nil)
+
+		require.NoError(t, err)
+
+		require.True(t, exists(t, st.cmd.Path))
+
+		err = st.runE(nil, nil)
+
+		require.NoError(t, err)
+	})
+
+	t.Run("Test_helpFunc", func(t *testing.T) {
+		t.Parallel()
+
+		st := &state{
+			levelVar: new(slog.LevelVar),
+			Options:  k6exec.Options{BuildServiceURL: env.BuildServiceURL()},
+		}
+
+		out := captureStderr(t, func() { st.helpFunc(newSubcommand("version", st), nil) })
+
+		require.Empty(t, out)
+	})
 }
 
 func exists(t *testing.T, filename string) bool {
