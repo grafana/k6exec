@@ -54,7 +54,7 @@ Since k6exec tries to emulate the `k6` command line, the `help` command or the `
 
 ### Prerequisites
 
-k6exec tries to provide the appropriate k6 executable after detecting the extension dependencies using a build service.
+k6exec tries to provide the appropriate k6 executable after detecting the extension dependencies. This can be done using a build service or a native builder.
 
 #### Build Service
 
@@ -62,7 +62,9 @@ No additional installation is required to use the build service, just provide th
 
 The build service URL can be specified in the `K6_BUILD_SERVICE_URL` environment variable or by using the `--build-service-url` flag.
 
-There is no default URL for the build service, otherwise k6exec will automatically provide k6 with the native builder.
+If the build service requires authentication, you can specify the authentication token using the `K6_BUILD_SERVICE_AUTH` environment variable.
+
+If the `k6_BUILD_SERVICE_URL` is not specified, `k6exec` tries to use the build service provided by Grafana Cloud K6 using the credential obtained from the [k6 cloud login](https://grafana.com/docs/grafana-cloud/testing/k6/author-run/tokens-and-cli-authentication/) command. You can also provide this credentials using the `K6_CLOUD_TOKEN` environment variable.
 
 ### Dependencies
 
