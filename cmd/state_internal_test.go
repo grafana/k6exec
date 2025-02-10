@@ -37,7 +37,7 @@ func Test_interal_state(t *testing.T) { //nolint:tparallel
 		st := &state{levelVar: new(slog.LevelVar)}
 
 		require.NoError(t, st.persistentPreRunE(cmd, nil))
-		require.Empty(t, st.BuildServiceURL)
+		require.Equal(t, defaultBuildServiceURL, st.BuildServiceURL)
 		require.Equal(t, slog.LevelInfo, st.levelVar.Level())
 
 		st.buildServiceURL = "http://example.com"

@@ -10,6 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	defaultBuildServiceURL = "https://ingest.k6.io/builder/api/v1"
+)
+
 type state struct {
 	k6exec.Options
 	buildServiceURL string
@@ -35,6 +39,7 @@ func newState(levelVar *slog.LevelVar) *state {
 func (s *state) persistentPreRunE(cmd *cobra.Command, _ []string) error {
 	var err error
 
+	s.Options.BuildServiceURL = defaultBuildServiceURL
 	if len(s.buildServiceURL) > 0 {
 		s.Options.BuildServiceURL = s.buildServiceURL
 	}
