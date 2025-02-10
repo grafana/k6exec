@@ -21,6 +21,7 @@ type state struct {
 	levelVar        *slog.LevelVar
 	cmd             *exec.Cmd
 	cleanup         func() error
+	configFile      string
 }
 
 func newState(levelVar *slog.LevelVar) *state {
@@ -31,10 +32,36 @@ func newState(levelVar *slog.LevelVar) *state {
 	return s
 }
 
-func (s *state) persistentPreRunE(_ *cobra.Command, _ []string) error {
+func (s *state) persistentPreRunE(cmd *cobra.Command, _ []string) error {
+	var err error
+
 	if len(s.buildServiceURL) > 0 {
 		s.Options.BuildServiceURL = s.buildServiceURL
 	}
+
+	// get authorization token for the build service
+	auth := os.Getenv("K6_CLOUD_TOKEN") //nolint:forbidigo
+
+	if len(auth) == 0 {
+		// allow overriding the config file for testing
+		configFile := s.configFile
+		if configFile == "" {
+			// check if the command has a 'config' flag and get the value
+			configFile, err = getFlagValue(cmd, "--config", "-c")
+			if err != nil {
+				return err
+			}
+		}
+
+		config, err := loadConfig(configFile)
+		if err != nil {
+			return err
+		}
+
+		auth = config.Collectors.Cloud.Token
+	}
+
+	s.Options.BuildServiceToken = auth
 
 	if s.verbose && s.levelVar != nil {
 		s.levelVar.Set(slog.LevelDebug)

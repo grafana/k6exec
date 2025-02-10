@@ -12,6 +12,7 @@ func provision(ctx context.Context, deps k6deps.Dependencies, opts *Options) (st
 
 	if opts != nil {
 		config.BuildServiceURL = opts.BuildServiceURL
+		config.BuildServiceAuth = opts.BuildServiceToken
 	}
 
 	provider, err := k6provider.NewProvider(config)
