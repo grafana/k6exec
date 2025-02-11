@@ -39,10 +39,17 @@ func newState(levelVar *slog.LevelVar) *state {
 func (s *state) persistentPreRunE(cmd *cobra.Command, _ []string) error {
 	var err error
 
-	s.Options.BuildServiceURL = defaultBuildServiceURL
-	if len(s.buildServiceURL) > 0 {
-		s.Options.BuildServiceURL = s.buildServiceURL
+	// get URL to build service: first provided from flag, then from environment variable, then default
+	buildServiceURL := s.buildServiceURL
+
+	if len(buildServiceURL) == 0 {
+		buildServiceURL = os.Getenv("K6_BUILD_SERVICE_URL") //nolint:forbidigo
 	}
+	if len(buildServiceURL) == 0 {
+		buildServiceURL = defaultBuildServiceURL
+	}
+
+	s.Options.BuildServiceURL = buildServiceURL
 
 	// get authorization token for the build service
 	auth := os.Getenv("K6_CLOUD_TOKEN") //nolint:forbidigo
