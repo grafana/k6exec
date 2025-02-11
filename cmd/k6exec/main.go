@@ -52,13 +52,13 @@ func newCmd(args []string, levelVar *slog.LevelVar) *cobra.Command {
 //nolint:forbidigo
 func runCmd(cmd *cobra.Command) {
 	if err := cmd.Execute(); err != nil {
-		var eerr *exec.ExitError
+		slog.Error(formatError(err))
 
+		var eerr *exec.ExitError
 		if errors.As(err, &eerr) {
 			os.Exit(eerr.ExitCode())
 		}
 
-		slog.Error(formatError(err))
 		os.Exit(1)
 	}
 }
