@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -44,4 +46,25 @@ func getArgs(cmd *cobra.Command) []string {
 	}
 
 	return nil
+}
+
+// getFlagValue returns the value of the flag from the command arguments given its name and (optional) shortName.
+// If the flag is not found it returns an empty string.
+// if it is found but the next element is not its value, it returns an error.
+func getFlagValue(cmd *cobra.Command, fullName string, shortName string) (string, error) {
+	args := getArgs(cmd)
+
+	for i, arg := range args {
+		if arg == fullName || (shortName != "" && arg == shortName) {
+			// if this is the last argument or the next element is a flag, return an empty string
+			// this is an error in thc CLI arguments
+			if i+1 == len(args) || strings.HasPrefix(args[i+1], "-") {
+				return "", fmt.Errorf("flag %s is missing a value", arg)
+			}
+
+			return args[i+1], nil
+		}
+	}
+
+	return "", nil
 }

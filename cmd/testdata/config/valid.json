@@ -1,0 +1,7 @@
+{
+  "collectors": {
+    "cloud": {
+      "token": "token"
+    }
+  }
+}

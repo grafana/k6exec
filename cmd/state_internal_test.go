@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"io"
 	"log/slog"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/grafana/k6build/pkg/testutils"
 	"github.com/grafana/k6exec"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
 
@@ -31,25 +33,52 @@ func Test_interal_state(t *testing.T) { //nolint:tparallel
 	})
 
 	t.Run("Test_persistentPreRunE", func(t *testing.T) { //nolint:paralleltest
+		cmd := &cobra.Command{}
 		st := &state{levelVar: new(slog.LevelVar)}
 
-		require.NoError(t, st.persistentPreRunE(nil, nil))
-		require.Empty(t, st.BuildServiceURL)
+		require.NoError(t, st.persistentPreRunE(cmd, nil))
+		require.Equal(t, defaultBuildServiceURL, st.BuildServiceURL)
 		require.Equal(t, slog.LevelInfo, st.levelVar.Level())
 
 		st.buildServiceURL = "http://example.com"
 
-		require.NoError(t, st.persistentPreRunE(nil, nil))
+		require.NoError(t, st.persistentPreRunE(cmd, nil))
 		require.Equal(t, "http://example.com", st.BuildServiceURL)
 
 		st.buildServiceURL = "http://example.com"
 		st.verbose = true
 
-		require.NoError(t, st.persistentPreRunE(nil, nil))
+		require.NoError(t, st.persistentPreRunE(cmd, nil))
 		require.Equal(t, slog.LevelDebug, st.levelVar.Level())
 
 		st.levelVar = nil
-		require.NoError(t, st.persistentPreRunE(nil, nil))
+		require.NoError(t, st.persistentPreRunE(cmd, nil))
+	})
+
+	t.Run("Test_loadConfig", func(t *testing.T) { //nolint:paralleltest
+		st := &state{
+			levelVar:   new(slog.LevelVar),
+			configFile: filepath.Join("testdata", "config", "valid.json"),
+		}
+
+		require.NoError(t, st.persistentPreRunE(&cobra.Command{}, nil))
+		require.Equal(t, "token", st.Options.BuildServiceToken)
+
+		st = &state{
+			levelVar:   new(slog.LevelVar),
+			configFile: filepath.Join("testdata", "config", "empty.json"),
+		}
+
+		require.NoError(t, st.persistentPreRunE(&cobra.Command{}, nil))
+		require.Empty(t, st.Options.BuildServiceToken)
+
+		// test config override from flag
+		cmd := &cobra.Command{Use: "test"}
+		cmd.SetContext(context.WithValue(context.Background(), argsKey{}, []string{"test", "--config", "no_such_file.json"}))
+		st = &state{
+			levelVar: new(slog.LevelVar),
+		}
+		require.Error(t, st.persistentPreRunE(cmd, nil))
 	})
 
 	t.Run("Test_preRunE", func(t *testing.T) { //nolint:paralleltest
