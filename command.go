@@ -2,6 +2,7 @@ package k6exec
 
 import (
 	"context"
+	"log/slog"
 	"os/exec"
 )
 
@@ -17,10 +18,15 @@ func Command(ctx context.Context, args []string, opts *Options) (*exec.Cmd, func
 		return nil, nil, err
 	}
 
+	slog.Info("provisioning k6 binary")
+
 	exe, err := provision(ctx, deps, opts)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	// FIXME: can we leak sensitive information in arguments here? (pablochacin)
+	slog.Debug("running k6", "path", exe, "args", args)
 
 	cmd := exec.CommandContext(ctx, exe, args...) //nolint:gosec
 
