@@ -28,7 +28,7 @@ func provision(ctx context.Context, deps k6deps.Dependencies, opts *Options) (st
 		return "", err
 	}
 
-	slog.Debug("binary downloaded", "Path: ", binary.Path, "dependencies", deps.String())
+	slog.Debug("binary downloaded", "Path: ", binary.Path, "dependencies", deps.String(), "checksum", binary.Checksum)
 
 	return binary.Path, nil
 }
