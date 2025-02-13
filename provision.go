@@ -21,14 +21,14 @@ func provision(ctx context.Context, deps k6deps.Dependencies, opts *Options) (st
 		return "", err
 	}
 
-	slog.Debug("downloading binary", "build service URL: ", opts.BuildServiceURL)
+	slog.Debug("fetching binary", "build service URL: ", opts.BuildServiceURL)
 
 	binary, err := provider.GetBinary(ctx, deps)
 	if err != nil {
 		return "", err
 	}
 
-	slog.Debug("binary downloaded", "Path: ", binary.Path, "dependencies", deps.String(), "checksum", binary.Checksum)
+	slog.Debug("binary fetched", "Path: ", binary.Path, "dependencies", deps.String(), "checksum", binary.Checksum)
 
 	return binary.Path, nil
 }

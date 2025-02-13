@@ -18,7 +18,7 @@ func Command(ctx context.Context, args []string, opts *Options) (*exec.Cmd, func
 		return nil, nil, err
 	}
 
-	slog.Info("provisioning k6 binary")
+	slog.Info("fetching k6 binary")
 
 	exe, err := provision(ctx, deps, opts)
 	if err != nil {
