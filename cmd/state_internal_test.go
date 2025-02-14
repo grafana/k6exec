@@ -14,8 +14,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_interal_state(t *testing.T) { //nolint:tparallel
-	t.Parallel()
+func Test_interal_state(t *testing.T) {
+	t.Setenv("K6_BUILD_SERVICE_URL", "")
+	t.Setenv("K6_CLOUD_TOKEN", "")
 
 	env, err := testutils.NewTestEnv(testutils.TestEnvConfig{
 		WorkDir: t.TempDir(),
