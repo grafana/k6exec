@@ -22,8 +22,8 @@ github.com/grafana/k6foundry v0.3.1 h1:nv4BqlJfNXrVMk7ps7mlGiPgegR73ogTvisn1y0bY
 github.com/grafana/k6foundry v0.3.1/go.mod h1:4Hw0ll6ZsKN8f3cgp7I4N6EkhXafZ6CBC6fDJWkW7/Q=
 github.com/grafana/k6pack v0.2.4 h1:JzbaO/NnLBaM2Shbn59WynaGAYL+jMvnjsoj/VTr3es=
 github.com/grafana/k6pack v0.2.4/go.mod h1:JTG8lQRU4U4WNKkznSL6zYokviiFVIp1I9W7z7NmrLA=
-github.com/grafana/k6provider v0.1.7 h1:vBHzm80u7vAa2xIocxtq/rK4fy1d0kaVR9arrGNc1n0=
-github.com/grafana/k6provider v0.1.7/go.mod h1:Uvqmgg/16Dc4vm70EwRxx2teA9NMZtSPm1v9qnobtbY=
+github.com/grafana/k6provider v0.1.9 h1:N9yoauRIb4JtDPBB+z3mrIdFHvo5h7S6UA9pfKdjVZg=
+github.com/grafana/k6provider v0.1.9/go.mod h1:voN3IOPdqODBp7RGGawYeHNHTxdwYHb6LW/9dYtBtHw=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/klauspost/compress v1.17.9 h1:6KIumPrER1LHsvBVuDa0r5xaG0Es51mhhB9BQB2qeMA=

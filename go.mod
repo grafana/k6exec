@@ -6,6 +6,7 @@ require (
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6build v0.5.4
 	github.com/grafana/k6deps v0.2.1
+	github.com/grafana/k6provider v0.1.9
 	github.com/samber/slog-logrus/v2 v2.5.2
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
@@ -30,7 +31,6 @@ require (
 	github.com/evanw/esbuild v0.24.2 // indirect
 	github.com/grafana/k6foundry v0.3.1 // indirect
 	github.com/grafana/k6pack v0.2.4 // indirect
-	github.com/grafana/k6provider v0.1.7
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/samber/lo v1.47.0 // indirect

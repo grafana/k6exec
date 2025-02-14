@@ -142,6 +142,7 @@ func (s *state) runE(_ *cobra.Command, _ []string) error {
 		}
 	}()
 
+	slog.Debug("running", "k6 binary", s.cmd.Path, "args", s.cmd.Args[1:])
 	err = s.cmd.Run()
 
 	return err
