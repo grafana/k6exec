@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	github.com/grafana/clireadme v0.1.0
-	github.com/grafana/k6build v0.5.4
+	github.com/grafana/k6build v0.5.5
 	github.com/grafana/k6deps v0.2.1
 	github.com/grafana/k6provider v0.1.10
 	github.com/samber/slog-logrus/v2 v2.5.2
@@ -29,7 +29,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/evanw/esbuild v0.24.2 // indirect
-	github.com/grafana/k6foundry v0.3.1 // indirect
+	github.com/grafana/k6foundry v0.4.2 // indirect
 	github.com/grafana/k6pack v0.2.4 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
