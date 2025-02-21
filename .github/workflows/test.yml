@@ -33,7 +33,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Test
-        run: go test -race -count 1 ./...
+        run: go test -v -race -count 1 ./...
 
       - name: Coverage Test
         if: ${{ matrix.platform == 'ubuntu-latest' && github.ref_name == 'main' }}

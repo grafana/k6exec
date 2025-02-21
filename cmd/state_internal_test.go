@@ -139,6 +139,8 @@ func Test_interal_state(t *testing.T) {
 
 		require.True(t, exists(t, st.cmd.Path))
 
+		t.Logf("Running k6 from %s", st.cmd.Path)
+
 		err = st.runE(nil, nil)
 
 		require.NoError(t, err)
