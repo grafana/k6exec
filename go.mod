@@ -5,7 +5,7 @@ go 1.22.4
 require (
 	github.com/grafana/clireadme v0.1.0
 	github.com/grafana/k6build v0.5.4
-	github.com/grafana/k6deps v0.2.2
+	github.com/grafana/k6deps v0.2.3
 	github.com/grafana/k6provider v0.1.10
 	github.com/samber/slog-logrus/v2 v2.5.2
 	github.com/sirupsen/logrus v1.9.3

@@ -16,8 +16,8 @@ github.com/grafana/clireadme v0.1.0 h1:KYEYSnYdSzmHf3bufaK6fQZ5j4dzvM/T+G6Ba+qNn
 github.com/grafana/clireadme v0.1.0/go.mod h1:Wy4KIG2ZBGMYAYyF9l7qAy+yoJVasqk/txsRgoRI3gc=
 github.com/grafana/k6build v0.5.4 h1:RSaui4O1SySw6TADOwLod/SaRBiTq9bht6sKGePBIuA=
 github.com/grafana/k6build v0.5.4/go.mod h1:LpBRh+nbwhCBt5v/LCa14taDuRbXKze56kZCKPNlWho=
-github.com/grafana/k6deps v0.2.2 h1:SvIEqTQFV8S2HzwOvwjEcsU+2q03tQRxDItLJjEfnxQ=
-github.com/grafana/k6deps v0.2.2/go.mod h1:k4CRrDOKAKfGbrcGK1cUv1jGG1nKi7Ka+n0vYngy5o8=
+github.com/grafana/k6deps v0.2.3 h1:2uZr2FhLnk1VAznbUb/7vMaHYMl43qXWxIai+iL5cPk=
+github.com/grafana/k6deps v0.2.3/go.mod h1:SVJT5urqP7Rj9Qs8TxgftE7MinDSs1raDnZVymzSaHc=
 github.com/grafana/k6foundry v0.3.1 h1:nv4BqlJfNXrVMk7ps7mlGiPgegR73ogTvisn1y0bYJ8=
 github.com/grafana/k6foundry v0.3.1/go.mod h1:4Hw0ll6ZsKN8f3cgp7I4N6EkhXafZ6CBC6fDJWkW7/Q=
 github.com/grafana/k6pack v0.2.4 h1:JzbaO/NnLBaM2Shbn59WynaGAYL+jMvnjsoj/VTr3es=
