@@ -23,7 +23,7 @@ type Options struct {
 	// If the scriptfile parameter is empty, FindManifest starts searching
 	// for the manifest file from the current directory
 	// If missing, the closest manifest file will be used.
-	FindManifest func(scriptfile string) (contents []byte, filename string, ok bool, err error)
+	FindManifest func(scriptfile string) (filename string, ok bool, err error)
 	// AppName contains the name of the application. It is used to define the default value of CacheDir.
 	// If empty, it defaults to os.Args[0].
 	AppName string
