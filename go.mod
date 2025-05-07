@@ -1,8 +1,7 @@
 module github.com/grafana/k6exec
 
 go 1.23
-
-toolchain go1.23.7
+toolchain go1.24.1
 
 require (
 	github.com/grafana/clireadme v0.1.0
@@ -13,7 +12,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/term v0.29.0
+	golang.org/x/term v0.31.0
 )
 
 require (
@@ -39,7 +38,7 @@ require (
 	github.com/samber/slog-common v0.18.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	golang.org/x/mod v0.23.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
