@@ -7,6 +7,10 @@
 
 <h1 name="title">k6exec</h1>
 
+## Deprecation notice
+
+k6exec is no longer maintained. The logic of running k6 tests with extensions has been integrated into k6 since `v1.0.0`.
+
 **Launcher for k6 with seamless use of extensions.**
 
 k6exec is a launcher library for k6 with seamless use of extensions. The launcher will always run the k6 test script with the appropriate k6 binary, which contains the extensions used by the script. Extensions can also be recognized from the environment variable (default `K6_DEPENDENCIES`) or from the `dependencies` property of the manifest file.
